@@ -1,0 +1,13 @@
+// Create a custom Cloud9 runner - similar to the Sublime build system
+// For more information see https://docs.c9.io/custom_runners.html
+{
+  "cmd": [
+    "sh",
+    "-c",
+    "echo $file | sed -r 's/.*\\/src\\///g' | sed -r 's/\\.java//g'  | sed -r 's/\\//\\./g' | xargs java"
+  ],
+  "info": "\\033[01;34mRunning\\033[00m \\033[01;31m$file_name\\033[00m\n",
+  "env": {"OUT_DIR": "$project_path\\.bin", "CLASSPATH" : "$OUT_DIR:$CLASSPATH"},
+  "selector": "source.java",
+  "working_dir": "$project_path"
+}
