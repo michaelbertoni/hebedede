@@ -18,7 +18,7 @@ public class Console {
 		AuthentificationService authentificationService = new AuthentificationService();
 		
 		if(authentificationService.login(username, password)){
-			System.out.println("Vous Ãªtes authentifiÃ©");
+			System.out.println("Vous êtes authentifié");
 		}else{
 			System.out.println("Echec de l'authentification");
 		}

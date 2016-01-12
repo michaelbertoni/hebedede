@@ -9,8 +9,10 @@ public class AuthentificationService {
 
 	public boolean login(String username, String password) {
 
+		donneesUtilisateur.DonneesUtilisateur();
+		Utilisateur utilisateur;
 		try {
-			Utilisateur utilisateur = donneesUtilisateur.trouverUtilisateur(username);
+			utilisateur = donneesUtilisateur.trouverUtilisateur(username);
 			return utilisateur.getPassword().equals(password);
 
 		} catch (UtilisateurInconnuException e) {
