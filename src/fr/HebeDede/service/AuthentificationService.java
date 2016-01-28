@@ -12,7 +12,7 @@ public class AuthentificationService {
 		donneesUtilisateur.DonneesUtilisateur();
 		Utilisateur utilisateur;
 		try {
-			utilisateur = donneesUtilisateur.trouverUtilisateur(username);
+			utilisateur = donneesUtilisateur.findUser(username);
 			return utilisateur.getPassword().equals(password);
 
 		} catch (UtilisateurInconnuException e) {
