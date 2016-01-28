@@ -4,11 +4,13 @@ public class Utilisateur {
 
 	private String username;
 	private String password;
+	private Role role;
 
-	public Utilisateur(String username, String password) {
+	public Utilisateur(String username, String password, Role role) {
 		super();
 		this.username = username;
 		this.password = password;
+		this.role = role;
 	}
 
 	public String getUsername() {
@@ -21,6 +23,14 @@ public class Utilisateur {
 
 	public String getPassword() {
 		return password;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
 	}
 
 	@Override

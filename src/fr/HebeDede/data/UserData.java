@@ -5,6 +5,7 @@ import java.util.List;
 
 import fr.HebeDede.exception.UserAlreadyExistsException;
 import fr.HebeDede.exception.UtilisateurInconnuException;
+import fr.HebeDede.model.Role;
 import fr.HebeDede.model.Utilisateur;
 
 
@@ -14,9 +15,9 @@ public class UserData implements UserDataAccess{
 
 	public void DonneesUtilisateur() {
 		// Jeu d'essai
-		utilisateurs.add(new Utilisateur("Robert", "licorne42"));
-		utilisateurs.add(new Utilisateur("Paul", "licorne43"));
-		utilisateurs.add(new Utilisateur("Jean", "licorne44"));
+		utilisateurs.add(new Utilisateur("Robert", "licorne42", RoleClient()));
+		utilisateurs.add(new Utilisateur("Paul", "licorne43", RoleEmploye()));
+		utilisateurs.add(new Utilisateur("Jean", "licorne44", RolePatron()));
 	}
 
 	public Utilisateur findUser(String username) throws UtilisateurInconnuException {
@@ -31,10 +32,29 @@ public class UserData implements UserDataAccess{
 
 	}
 	
+	
+	
+	public Role RoleEmploye() {
+		Role role = new Role(false, false, true, true, true);
+		return role;
+	}
+	
+	public Role RoleClient() {
+		Role role = new Role(true, true, true, false, false);
+		return role;
+	}
+	
+	public Role RolePatron() {
+		Role role = new Role(true, true, true, true, true);
+		return role;
+	}
+	
+	
+	
 	@Override
 	public List<Utilisateur> getAllUser() {
-		// TODO Auto-generated method stub
-		return null;
+		this.DonneesUtilisateur();
+		return utilisateurs;
 	}
 
 	@Override
