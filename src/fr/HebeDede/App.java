@@ -4,9 +4,11 @@ import fr.HebeDede.ui.Console;
 
 public class App {
 	
-	public static void main(String[] args){
+	public static void main(String[] args) {
 		
 		Console.promptLogin();
+		
+		Console.promptMenu();
 	}
 
 }

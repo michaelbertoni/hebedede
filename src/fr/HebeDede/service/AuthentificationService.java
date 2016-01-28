@@ -14,10 +14,22 @@ public class AuthentificationService {
 		try {
 			utilisateur = donneesUtilisateur.findUser(username);
 			return utilisateur.getPassword().equals(password);
-
 		} catch (UtilisateurInconnuException e) {
 			return false;
 		}
+
+	}
+	
+	public Utilisateur saveConnectedUser(String username) {
+		donneesUtilisateur.DonneesUtilisateur();
+		Utilisateur connectedUser = null;
+		try {
+			connectedUser = donneesUtilisateur.findUser(username);
+			return connectedUser;
+		} catch (UtilisateurInconnuException e) {
+			e.printStackTrace();
+		}
+		return null;
 
 	}
 }
