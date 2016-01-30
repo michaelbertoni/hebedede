@@ -13,7 +13,7 @@ import java.util.List;
 import fr.HebeDede.exception.DataAccessException;
 import fr.HebeDede.exception.UserAlreadyExistsException;
 import fr.HebeDede.exception.UtilisateurInconnuException;
-import fr.HebeDede.model.Utilisateur;
+import fr.HebeDede.model.old.Utilisateur;
 
 public class FileUserData implements UserDataAccess {
 

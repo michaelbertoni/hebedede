@@ -1,6 +1,11 @@
-package fr.HebeDede.model;
+package fr.HebeDede.model.old;
 
-public class Role {
+import java.io.Serializable;
+
+public class Role implements Serializable {
+	
+	private static final long serialVersionUID = -3915850192530083621L;
+	
 	private Boolean droitOptionBD;
 	private Boolean droitAnnulationOption;
 	private Boolean droitConsultationOption;

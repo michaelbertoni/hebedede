@@ -2,7 +2,7 @@ package fr.HebeDede.ui;
 
 import java.util.Scanner;
 
-import fr.HebeDede.model.Utilisateur;
+import fr.HebeDede.model.old.Utilisateur;
 import fr.HebeDede.service.AuthentificationService;
 
 public class Console {
