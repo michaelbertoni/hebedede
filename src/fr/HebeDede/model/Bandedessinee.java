@@ -13,7 +13,9 @@ import javax.persistence.*;
 public class Bandedessinee implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private String libelle;
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private int idBandeDessinee;
 
 	private String auteur;
 
@@ -27,6 +29,8 @@ public class Bandedessinee implements Serializable {
 
 	private String etat;
 
+	private String libelle;
+
 	private int nbrPages;
 
 	//bi-directional many-to-one association to Article
@@ -36,12 +40,12 @@ public class Bandedessinee implements Serializable {
 	public Bandedessinee() {
 	}
 
-	public String getLibelle() {
-		return this.libelle;
+	public int getIdBandeDessinee() {
+		return this.idBandeDessinee;
 	}
 
-	public void setLibelle(String libelle) {
-		this.libelle = libelle;
+	public void setIdBandeDessinee(int idBandeDessinee) {
+		this.idBandeDessinee = idBandeDessinee;
 	}
 
 	public String getAuteur() {
@@ -90,6 +94,14 @@ public class Bandedessinee implements Serializable {
 
 	public void setEtat(String etat) {
 		this.etat = etat;
+	}
+
+	public String getLibelle() {
+		return this.libelle;
+	}
+
+	public void setLibelle(String libelle) {
+		this.libelle = libelle;
 	}
 
 	public int getNbrPages() {

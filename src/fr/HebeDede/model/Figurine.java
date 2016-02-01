@@ -13,9 +13,11 @@ import javax.persistence.*;
 public class Figurine implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private String description;
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private int idFigurine;
 
-	private String libelle;
+	private String description;
 
 	private int taille;
 
@@ -26,20 +28,20 @@ public class Figurine implements Serializable {
 	public Figurine() {
 	}
 
+	public int getIdFigurine() {
+		return this.idFigurine;
+	}
+
+	public void setIdFigurine(int idFigurine) {
+		this.idFigurine = idFigurine;
+	}
+
 	public String getDescription() {
 		return this.description;
 	}
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public String getLibelle() {
-		return this.libelle;
-	}
-
-	public void setLibelle(String libelle) {
-		this.libelle = libelle;
 	}
 
 	public int getTaille() {
