@@ -1,11 +1,11 @@
 package fr.HebeDede.service;
 
-import fr.HebeDede.data.UserData;
+import fr.HebeDede.data.DatabaseConnection;
 import fr.HebeDede.exception.UtilisateurInconnuException;
 import fr.HebeDede.model.old.Utilisateur;
 
 public class AuthentificationService {
-	private UserData donneesUtilisateur = new UserData();
+	private DatabaseConnection donneesUtilisateur = new DatabaseConnection();
 
 	public boolean login(String username, String password) {
 
