@@ -13,7 +13,6 @@ import javax.persistence.*;
 public class Bandedessinee implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@Id
 	private String libelle;
 
 	private String auteur;
