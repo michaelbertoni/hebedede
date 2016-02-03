@@ -1,35 +1,22 @@
 package fr.HebeDede.service;
 
-import fr.HebeDede.data.DatabaseConnection;
 import fr.HebeDede.exception.UtilisateurInconnuException;
-import fr.HebeDede.model.old.Utilisateur;
+import fr.HebeDede.model.Utilisateur;
+import fr.HebeDede.repositories.UtilisateurDAO;
 
 public class AuthentificationService {
-	private DatabaseConnection donneesUtilisateur = new DatabaseConnection();
+	
+	static UtilisateurDAO userDAO = new UtilisateurDAO();
 
-	public boolean login(String username, String password) {
-
-		donneesUtilisateur.DonneesUtilisateur();
+	public boolean login(String username, String password) throws UtilisateurInconnuException {
 		Utilisateur utilisateur;
-		try {
-			utilisateur = donneesUtilisateur.findUser(username);
-			return utilisateur.getPassword().equals(password);
-		} catch (UtilisateurInconnuException e) {
-			return false;
-		}
-
+		utilisateur = userDAO.findByUsername(username);
+		return utilisateur.getPassword().equals(password);
 	}
 	
-	public Utilisateur saveConnectedUser(String username) {
-		donneesUtilisateur.DonneesUtilisateur();
+	public Utilisateur saveConnectedUser(String username) throws UtilisateurInconnuException {
 		Utilisateur connectedUser = null;
-		try {
-			connectedUser = donneesUtilisateur.findUser(username);
-			return connectedUser;
-		} catch (UtilisateurInconnuException e) {
-			e.printStackTrace();
-		}
-		return null;
-
+		connectedUser = userDAO.findByUsername(username);
+		return connectedUser;
 	}
 }

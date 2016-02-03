@@ -2,14 +2,15 @@ package fr.HebeDede.ui;
 
 import java.util.Scanner;
 
-import fr.HebeDede.model.old.Utilisateur;
+import fr.HebeDede.exception.UtilisateurInconnuException;
+import fr.HebeDede.model.Utilisateur;
 import fr.HebeDede.service.AuthentificationService;
 
 public class Console {
 	
 	public static Utilisateur user;
 	
-	public static void promptLogin() {
+	public static void promptLogin() throws UtilisateurInconnuException {
 		Scanner sc = new Scanner(System.in);
 		
 		System.out.println("Login");
@@ -33,13 +34,10 @@ public class Console {
 	public static void promptMenu() {
 		System.out.println("Bienvenue sur le site web d'HébéDédé !\n\nMenu principal :");
 		
-		if (user.getRole().getDroitOptionBD() == true) {
-			System.out.println("1. Rechercher et mettre une option sur une BD\n-------------------------");
+		System.out.println("1. Rechercher de BD\n-------------------------");
+		if (user.getRole().equals("Employe")) {
+			System.out.println("2. Ajouter une BD\n-------------------------");
 		}
-		else {
-			System.out.println("testKO");
-		}
-		
 	}
 
 }

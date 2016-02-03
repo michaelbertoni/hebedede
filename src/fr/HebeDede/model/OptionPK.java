@@ -14,10 +14,10 @@ public class OptionPK implements Serializable {
 
 	private int idOption;
 
-	@Column(insertable=false, updatable=false)
+//	@Column(insertable=false, updatable=false)
 	private int utilisateur_idUtilisateur;
 
-	@Column(insertable=false, updatable=false)
+//	@Column(insertable=false, updatable=false)
 	private int article_idArticle;
 
 	public OptionPK() {

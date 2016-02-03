@@ -19,7 +19,7 @@ public class Article implements Serializable {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int idArticle;
 
-	private Object enRayon;
+	private Boolean enRayon;
 
 	private BigDecimal prix;
 
@@ -46,11 +46,11 @@ public class Article implements Serializable {
 		this.idArticle = idArticle;
 	}
 
-	public Object getEnRayon() {
+	public Boolean getEnRayon() {
 		return this.enRayon;
 	}
 
-	public void setEnRayon(Object enRayon) {
+	public void setEnRayon(Boolean enRayon) {
 		this.enRayon = enRayon;
 	}
 

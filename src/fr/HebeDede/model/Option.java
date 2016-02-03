@@ -25,10 +25,12 @@ public class Option implements Serializable {
 
 	//bi-directional many-to-one association to Article
 	@ManyToOne
+	@JoinColumn(name="article_idArticle", referencedColumnName="idArticle", insertable=false, updatable=false)
 	private Article article;
 
 	//bi-directional many-to-one association to Utilisateur
 	@ManyToOne
+	@JoinColumn(name="utilisateur_idUtilisateur", referencedColumnName="idUtilisateur", insertable=false, updatable=false)
 	private Utilisateur utilisateur;
 
 	public Option() {

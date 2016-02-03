@@ -2,13 +2,19 @@ package fr.HebeDede.model.old;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
+
+import org.hibernate.annotations.Type;
+
 public class Article implements Serializable {
 	
 	private static final long serialVersionUID = -8278421890067757122L;
 	
 	private Long idArticle;
 	private Float prix;
+	
 	private Boolean enRayon;
+	
 	private Integer stock;
 	
 	public Long getIdArticle() {

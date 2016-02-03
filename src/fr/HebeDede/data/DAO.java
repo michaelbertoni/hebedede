@@ -1,9 +1,12 @@
 package fr.HebeDede.data;
 
-import com.mysql.jdbc.Connection;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
 public abstract class DAO<T> {
-	public Connection connect = DatabaseConnection.getInstance();
+	public EntityManagerFactory emf = Persistence.createEntityManagerFactory("fr.hebedede.jpa");
+	public EntityManager em = emf.createEntityManager();
 	
 	/**
 	 * Permet de récupérer un objet via son ID
@@ -17,13 +20,13 @@ public abstract class DAO<T> {
 	 * par rapport à un objet
 	 * @param obj
 	 */
-	public abstract T create(T obj);
+	public abstract void create(T obj);
 	
 	/**
 	 * Permet de mettre à jour les données d'une entrée dans la base 
 	 * @param obj
 	 */
-	public abstract T update(T obj);
+	public abstract void update(T obj);
 	
 	/**
 	 * Permet la suppression d'une entrée de la base

@@ -9,7 +9,7 @@ public class DatabaseConnection {
 	/**
 	 * URL de connection
 	 */
-	private static String url = "jdbc:mysql://localhost:3308/HebeDede";
+	private static String url = "jdbc:mysql://localhost:3308/HebeDede?tinyInt1isBit=false";
 	/**
 	 * Nom du user
 	 */
