@@ -1,42 +1,25 @@
 package fr.HebeDede.data;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import com.mysql.jdbc.Connection;
 
 public class DatabaseConnection {
-
-	/**
-	 * URL de connection
-	 */
-	private static String url = "jdbc:mysql://localhost:3308/HebeDede?tinyInt1isBit=false";
-	/**
-	 * Nom du user
-	 */
-	private static String user = "root";
-	/**
-	 * Mot de passe du user
-	 */
-	private static String passwd = "root";
-	/**
-	 * Objet Connection
-	 */
-	private static Connection connect;
 	
-	/**
-	 * Méthode qui va nous retourner notre instance
-	 * et la créer si elle n'existe pas...
-	 * @return
-	 */
-	public static Connection getInstance(){
+	private static Connection connect;
+
+	public static Connection getInstance() throws ClassNotFoundException,
+			IllegalAccessException {
 		if(connect == null){
 			try {
-				connect = (Connection) DriverManager.getConnection(url, user, passwd);
+				Class.forName("com.mysql.jdbc.Driver");
+				System.out.println("Driver O.K.");
+
+				connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/HebeDede", "root", "root");
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-		}		
-		return connect;	
+		}
+		return connect;
 	}	
-
 }

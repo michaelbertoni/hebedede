@@ -1,38 +1,21 @@
 package fr.HebeDede.model;
 
 import java.io.Serializable;
-import javax.persistence.*;
 
-
-/**
- * The persistent class for the figurine database table.
- * 
- */
-@Entity
-@NamedQuery(name="Figurine.findAll", query="SELECT f FROM Figurine f")
-public class Figurine implements Serializable {
+public class Figurine extends Article implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	private int idFigurine;
+	private Integer idFigurine;
 
 	private String description;
 
-	private int taille;
+	private Integer taille;
 
-	//bi-directional many-to-one association to Article
-	@ManyToOne
-	private Article article;
-
-	public Figurine() {
-	}
-
-	public int getIdFigurine() {
+	public Integer getIdFigurine() {
 		return this.idFigurine;
 	}
 
-	public void setIdFigurine(int idFigurine) {
+	public void setIdFigurine(Integer idFigurine) {
 		this.idFigurine = idFigurine;
 	}
 
@@ -44,20 +27,12 @@ public class Figurine implements Serializable {
 		this.description = description;
 	}
 
-	public int getTaille() {
+	public Integer getTaille() {
 		return this.taille;
 	}
 
-	public void setTaille(int taille) {
+	public void setTaille(Integer taille) {
 		this.taille = taille;
-	}
-
-	public Article getArticle() {
-		return this.article;
-	}
-
-	public void setArticle(Article article) {
-		this.article = article;
 	}
 
 }

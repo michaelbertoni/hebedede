@@ -1,21 +1,11 @@
 package fr.HebeDede.model;
 
 import java.io.Serializable;
-import javax.persistence.*;
 
-
-/**
- * The persistent class for the bandedessinee database table.
- * 
- */
-@Entity
-@NamedQuery(name="Bandedessinee.findAll", query="SELECT b FROM Bandedessinee b")
-public class Bandedessinee implements Serializable {
+public class Bandedessinee extends Article implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	private int idBandeDessinee;
+	private Integer idBandeDessinee;
 
 	private String auteur;
 
@@ -33,18 +23,11 @@ public class Bandedessinee implements Serializable {
 
 	private int nbrPages;
 
-	//bi-directional many-to-one association to Article
-	@ManyToOne
-	private Article article;
-
-	public Bandedessinee() {
-	}
-
-	public int getIdBandeDessinee() {
+	public Integer getIdBandeDessinee() {
 		return this.idBandeDessinee;
 	}
 
-	public void setIdBandeDessinee(int idBandeDessinee) {
+	public void setIdBandeDessinee(Integer idBandeDessinee) {
 		this.idBandeDessinee = idBandeDessinee;
 	}
 
@@ -110,14 +93,6 @@ public class Bandedessinee implements Serializable {
 
 	public void setNbrPages(int nbrPages) {
 		this.nbrPages = nbrPages;
-	}
-
-	public Article getArticle() {
-		return this.article;
-	}
-
-	public void setArticle(Article article) {
-		this.article = article;
 	}
 
 }

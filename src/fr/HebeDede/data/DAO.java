@@ -1,36 +1,43 @@
 package fr.HebeDede.data;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import java.sql.Connection;
 
 public abstract class DAO<T> {
-	public EntityManagerFactory emf = Persistence.createEntityManagerFactory("fr.hebedede.jpa");
-	public EntityManager em = emf.createEntityManager();
-	
+	protected Connection connect = null;
+
+	public DAO(Connection conn) {
+		this.connect = conn;
+	}
+
 	/**
-	 * Permet de récupérer un objet via son ID
+	 * Méthode de création
+	 * 
+	 * @param obj
+	 * @return boolean
+	 */
+	public abstract boolean create(T obj);
+
+	/**
+	 * Méthode pour effacer
+	 * 
+	 * @param obj
+	 * @return boolean
+	 */
+	public abstract boolean delete(T obj);
+
+	/**
+	 * Méthode de mise à jour
+	 * 
+	 * @param obj
+	 * @return boolean
+	 */
+	public abstract boolean update(T obj);
+
+	/**
+	 * Méthode de recherche des informations
+	 * 
 	 * @param id
-	 * @return
+	 * @return T
 	 */
-	public abstract T find(long id);
-	
-	/**
-	 * Permet de créer une entrée dans la base de données
-	 * par rapport à un objet
-	 * @param obj
-	 */
-	public abstract void create(T obj);
-	
-	/**
-	 * Permet de mettre à jour les données d'une entrée dans la base 
-	 * @param obj
-	 */
-	public abstract void update(T obj);
-	
-	/**
-	 * Permet la suppression d'une entrée de la base
-	 * @param obj
-	 */
-	public abstract void delete(T obj);
-}
+	public abstract T find(int id);
+	}

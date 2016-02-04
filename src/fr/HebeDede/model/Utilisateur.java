@@ -1,23 +1,11 @@
 package fr.HebeDede.model;
 
 import java.io.Serializable;
-import javax.persistence.*;
 
-import java.util.List;
-
-
-/**
- * The persistent class for the utilisateur database table.
- * 
- */
-@Entity
-@NamedQuery(name="Utilisateur.findAll", query="SELECT u FROM Utilisateur u")
 public class Utilisateur implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	private int idUtilisateur;
+	private Integer idUtilisateur;
 
 	private String password;
 
@@ -25,18 +13,27 @@ public class Utilisateur implements Serializable {
 
 	private String username;
 
-	//bi-directional many-to-one association to Option
-	@OneToMany(mappedBy="utilisateur")
-	private List<Option> options;
+	public Utilisateur(String username, String pass, String role, Integer id) {
+		this.username = username;
+		this.password = pass;
+		this.role = role;
+		this.idUtilisateur = id;
+	}
+
+	public Utilisateur(String username, String pass, String role) {
+		this.username = username;
+		this.password = pass;
+		this.role = role;
+	}
 
 	public Utilisateur() {
 	}
 
-	public int getIdUtilisateur() {
+	public Integer getIdUtilisateur() {
 		return this.idUtilisateur;
 	}
 
-	public void setIdUtilisateur(int idUtilisateur) {
+	public void setIdUtilisateur(Integer idUtilisateur) {
 		this.idUtilisateur = idUtilisateur;
 	}
 
@@ -64,28 +61,6 @@ public class Utilisateur implements Serializable {
 		this.username = username;
 	}
 
-	public List<Option> getOptions() {
-		return this.options;
-	}
-
-	public void setOptions(List<Option> options) {
-		this.options = options;
-	}
-
-	public Option addOption(Option option) {
-		getOptions().add(option);
-		option.setUtilisateur(this);
-
-		return option;
-	}
-
-	public Option removeOption(Option option) {
-		getOptions().remove(option);
-		option.setUtilisateur(null);
-
-		return option;
-	}
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
