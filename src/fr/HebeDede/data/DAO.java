@@ -39,5 +39,5 @@ public abstract class DAO<T> {
 	 * @param id
 	 * @return T
 	 */
-	public abstract T find(int id);
+	public abstract T find(Integer id);
 	}

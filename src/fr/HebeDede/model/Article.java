@@ -11,6 +11,21 @@ public class Article implements Serializable {
 	private Boolean enRayon;
 
 	private Float prix;
+	
+	public Article(Boolean rayon, Float prix, Integer id) {
+		this.enRayon = rayon;
+		this.prix = prix;
+		this.idArticle = id;
+	}
+	
+	public Article(Boolean rayon, Float prix) {
+		this.enRayon = rayon;
+		this.prix = prix;
+	}
+	
+	public Article() {
+		
+	}
 
 	public Integer getIdArticle() {
 		return this.idArticle;
@@ -35,5 +50,5 @@ public class Article implements Serializable {
 	public void setPrix(Float prix) {
 		this.prix = prix;
 	}
-
+	
 }

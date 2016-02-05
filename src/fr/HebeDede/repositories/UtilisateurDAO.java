@@ -13,20 +13,25 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 		super(conn);
 	}
 
-	public Utilisateur find(int id) {
+	@Override
+	public Utilisateur find(Integer id) {
 		Utilisateur user = new Utilisateur();
 
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
 			        ResultSet.CONCUR_READ_ONLY
 			        ).executeQuery("SELECT * FROM utilisateur WHERE idUtilisateur = " + id);
-			if(result.first())
+			if(result.first()) {
 				user = new Utilisateur(result.getString("username"), result.getString("password"),
 						result.getString("role"), id);
+				result.close();
+				this.connect.close();
+				return user;
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return user;
+		return null;
 	}
 
 	public Utilisateur findByUsername(String username) {
@@ -34,16 +39,19 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 		
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
-					ResultSet.CONCUR_READ_ONLY
-).executeQuery(
+					ResultSet.CONCUR_READ_ONLY).executeQuery(
 					"SELECT * FROM utilisateur WHERE username = '" + username + "'");
-			if(result.first())
+			if(result.first()) {
 				user = new Utilisateur(username, result.getString("password"), result.getString("role"),
 						result.getInt("idUtilisateur"));
+				result.close();
+				this.connect.close();
+				return user;
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return user;
+		return null;
 	}
 
 	@Override
@@ -61,6 +69,8 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 				result.updateString("role", obj.getRole());
 				result.insertRow();
 				result.beforeFirst();
+				result.close();
+				this.connect.close();
 				return true;
 			}
 		} catch (SQLException e) {
@@ -71,11 +81,48 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 
 	@Override
 	public boolean delete(Utilisateur obj) {
+		try {
+			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE).executeQuery(
+					"SELECT * FROM utilisateur");
+			
+			while (result.next()) {
+					int id = result.getInt("idUtilisateur");
+					if (id == obj.getIdUtilisateur()) {
+						result.deleteRow();
+						result.close();
+						this.connect.close();
+						return true;
+					}
+				}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return false;
 	}
 
 	@Override
 	public boolean update(Utilisateur obj) {
+		try {
+			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE).executeQuery(
+					"SELECT * FROM utilisateur");
+			
+				while (result.next()) {
+					int id = result.getInt("idUtilisateur");
+					if (id == obj.getIdUtilisateur()) {
+						result.moveToCurrentRow();
+						result.updateString("username", obj.getUsername());
+						result.updateString("password", obj.getPassword());
+						result.updateString("role", obj.getRole());
+						result.close();
+						this.connect.close();
+						return true;
+					}
+				}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return false;
 	}
 
