@@ -25,7 +25,6 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 				user = new Utilisateur(result.getString("username"), result.getString("password"),
 						result.getString("role"), id);
 				result.close();
-				this.connect.close();
 				return user;
 			}
 		} catch (SQLException e) {
@@ -45,7 +44,6 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 				user = new Utilisateur(username, result.getString("password"), result.getString("role"),
 						result.getInt("idUtilisateur"));
 				result.close();
-				this.connect.close();
 				return user;
 			}
 		} catch (SQLException e) {
@@ -70,7 +68,6 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 				result.insertRow();
 				result.beforeFirst();
 				result.close();
-				this.connect.close();
 				return true;
 			}
 		} catch (SQLException e) {
@@ -91,7 +88,6 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 					if (id == obj.getIdUtilisateur()) {
 						result.deleteRow();
 						result.close();
-						this.connect.close();
 						return true;
 					}
 				}
@@ -116,7 +112,6 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 						result.updateString("password", obj.getPassword());
 						result.updateString("role", obj.getRole());
 						result.close();
-						this.connect.close();
 						return true;
 					}
 				}

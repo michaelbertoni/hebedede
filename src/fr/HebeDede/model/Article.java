@@ -24,7 +24,6 @@ public class Article implements Serializable {
 	}
 	
 	public Article() {
-		
 	}
 
 	public Integer getIdArticle() {

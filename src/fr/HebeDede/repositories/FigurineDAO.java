@@ -1,39 +1,119 @@
 package fr.HebeDede.repositories;
 
-import javax.persistence.EntityTransaction;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import fr.HebeDede.data.DAO;
 import fr.HebeDede.model.Figurine;
 
 public class FigurineDAO extends DAO<Figurine> {
+	
+	ArticleDAO articleDAO;
 
-	@Override
-	public Figurine find(long id) {
-		return em.find(Figurine.class, id);
+	public FigurineDAO(Connection conn) {
+		super(conn);
 	}
 
 	@Override
-	public void create(Figurine obj) {
-		EntityTransaction transac = em.getTransaction();
-		transac.begin();
-		em.persist(obj);
-		transac.commit();
+	public boolean create(Figurine obj) {
+		try {
+			articleDAO.create(obj);
+			Integer articleId = articleDAO.findLastEntryId();
+			
+			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE).executeQuery(
+					"SELECT * FROM figurine");
+			
+				result.moveToInsertRow();
+				result.updateString("description", obj.getDescription());
+				result.updateInt("taille", obj.getTaille());
+				result.updateInt("Article_idArticle", articleId);
+				result.insertRow();
+				
+				result.close();
+				return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	@Override
-	public void update(Figurine obj) {
-		EntityTransaction transac = em.getTransaction();
-		transac.begin();
-		em.persist(obj);
-		transac.commit();
+	public boolean delete(Figurine obj) {
+		try {
+			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE).executeQuery(
+					"SELECT * FROM figurine");
+	
+			while (result.next()) {
+					int id = result.getInt("idFigurine");
+					if (id == obj.getIdFigurine()) {
+						result.deleteRow();
+						
+						articleDAO.delete(obj);
+						
+						result.close();
+						return true;
+					}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	@Override
-	public void delete(Figurine obj) {
-		EntityTransaction transac = em.getTransaction();
-		transac.begin();
-		em.remove(obj);
-		transac.commit();
+	public boolean update(Figurine obj) {
+		try {
+			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE).executeQuery(
+					"SELECT * FROM figurine");
+
+			while (result.next()) {
+					int id = result.getInt("idFigurine");
+					if (id == obj.getIdFigurine()) {
+						result.moveToCurrentRow();
+						result.updateString("description", obj.getDescription());
+						result.updateInt("taille", obj.getTaille());
+						
+						articleDAO.update(obj);
+						
+						result.close();
+						return true;
+					}
+				}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
+
+	@Override
+	public Figurine find(Integer id) {
+		Figurine fig = new Figurine();
+
+		try {
+			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
+			        ResultSet.CONCUR_READ_ONLY
+			        ).executeQuery("SELECT * FROM figurine"
+			        		+ "INNER JOIN article on figurine.article_idArticle = article.idArticle"
+			        		+ "WHERE idFigurine = " + id);
+			if(result.first()) {
+				fig = new Figurine(result.getBoolean("enRayon"),
+						result.getFloat("prix"),
+						result.getInt("idArticle"),
+						result.getString("description"),
+						result.getInt("taille"),
+						id);
+				result.close();
+				return fig;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	
 }

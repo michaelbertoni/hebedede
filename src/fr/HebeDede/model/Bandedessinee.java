@@ -21,7 +21,36 @@ public class Bandedessinee extends Article implements Serializable {
 
 	private String libelle;
 
-	private int nbrPages;
+	private Integer nbrPages;
+	
+	public Bandedessinee (Boolean enRayon, Float prix, Integer idArticle, String auteur, String cat, String collection, String desc, String editeur, String etat, String libelle, Integer nbPages, Integer id) {
+		super(enRayon, prix, idArticle);
+		this.auteur = auteur;
+		this.categorie = cat;
+		this.collection = collection;
+		this.description = desc;
+		this.editeur = editeur;
+		this.etat = etat;
+		this.libelle = libelle;
+		this.nbrPages = nbPages;
+		this.idBandeDessinee = id;
+	}
+	
+	public Bandedessinee (Boolean enRayon, Float prix, String auteur, String cat, String collection, String desc, String editeur, String etat, String libelle, Integer nbPages) {
+		super(enRayon, prix);
+		this.auteur = auteur;
+		this.categorie = cat;
+		this.collection = collection;
+		this.description = desc;
+		this.editeur = editeur;
+		this.etat = etat;
+		this.libelle = libelle;
+		this.nbrPages = nbPages;
+	}
+	
+	public Bandedessinee() {
+		super();
+	}
 
 	public Integer getIdBandeDessinee() {
 		return this.idBandeDessinee;
@@ -87,11 +116,11 @@ public class Bandedessinee extends Article implements Serializable {
 		this.libelle = libelle;
 	}
 
-	public int getNbrPages() {
+	public Integer getNbrPages() {
 		return this.nbrPages;
 	}
 
-	public void setNbrPages(int nbrPages) {
+	public void setNbrPages(Integer nbrPages) {
 		this.nbrPages = nbrPages;
 	}
 
