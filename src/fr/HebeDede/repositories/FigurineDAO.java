@@ -10,7 +10,7 @@ import fr.HebeDede.model.Figurine;
 
 public class FigurineDAO extends DAO<Figurine> {
 	
-	ArticleDAO articleDAO;
+	ArticleDAO articleDAO = new ArticleDAO();
 
 	public FigurineDAO() throws ClassNotFoundException, IllegalAccessException {
 		super();
@@ -42,25 +42,6 @@ public class FigurineDAO extends DAO<Figurine> {
 
 	@Override
 	public boolean delete(Figurine obj) {
-		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_UPDATABLE).executeQuery(
-					"SELECT * FROM figurine");
-	
-			while (result.next()) {
-					int id = result.getInt("idFigurine");
-					if (id == obj.getIdFigurine()) {
-						result.deleteRow();
-						
-						articleDAO.delete(obj);
-						
-						result.close();
-						return true;
-					}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 		return false;
 	}
 
@@ -123,7 +104,7 @@ public class FigurineDAO extends DAO<Figurine> {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
 			        ResultSet.CONCUR_READ_ONLY
 			        ).executeQuery("SELECT * FROM figurine "
-			        		+ "INNER JOIN article on figurine.article_idArticle = article.idArticle");
+			        		+ "INNER JOIN article on figurine.Article_idArticle = article.idArticle");
 			while (result.next()) {
 				Figurine fig = new Figurine(result.getBoolean("enRayon"),
 						result.getFloat("prix"),
@@ -133,11 +114,35 @@ public class FigurineDAO extends DAO<Figurine> {
 						result.getInt("idFigurine"));
 				figList.add(fig);
 			}
+			result.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return figList;
 	}
 
-	
+	public Figurine findByIdArticle(Integer id) {
+		Figurine fig = new Figurine();
+
+		try {
+			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
+			        ResultSet.CONCUR_READ_ONLY
+			        ).executeQuery("SELECT * FROM figurine "
+			        		+ "INNER JOIN article on figurine.Article_idArticle = article.idArticle "
+			        		+ "WHERE Article_idArticle = " + id);
+			if(result.first()) {
+				fig = new Figurine(result.getBoolean("enRayon"),
+						result.getFloat("prix"),
+						id,
+						result.getString("description"),
+						result.getInt("taille"),
+						result.getInt("idFigurine"));
+				result.close();
+				return fig;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

@@ -1,22 +1,22 @@
 package fr.HebeDede.model;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Timestamp;
 
 public class Option implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Integer idOption;
 
-	private Date dateDebutOption;
+	private Timestamp dateDebutOption;
 
-	private Date dateFinOption;
+	private Timestamp dateFinOption;
 
 	private Article article;
 
 	private Utilisateur utilisateur;
 	
-	public Option(Date début, Date fin, Article art, Utilisateur user, Integer id) {
+	public Option(Timestamp début, Timestamp fin, Article art, Utilisateur user, Integer id) {
 		this.dateDebutOption = début;
 		this.dateFinOption = fin;
 		this.utilisateur = user;
@@ -24,7 +24,7 @@ public class Option implements Serializable {
 		this.idOption = id;
 	}
 	
-	public Option(Date début, Date fin, Article art, Utilisateur user) {
+	public Option(Timestamp début, Timestamp fin, Article art, Utilisateur user) {
 		this.dateDebutOption = début;
 		this.dateFinOption = fin;
 		this.utilisateur = user;
@@ -42,19 +42,19 @@ public class Option implements Serializable {
 		this.idOption = idOption;
 	}
 
-	public Date getDateDebutOption() {
+	public Timestamp getDateDebutOption() {
 		return this.dateDebutOption;
 	}
 
-	public void setDateDebutOption(Date dateDebutOption) {
+	public void setDateDebutOption(Timestamp dateDebutOption) {
 		this.dateDebutOption = dateDebutOption;
 	}
 
-	public Date getDateFinOption() {
+	public Timestamp getDateFinOption() {
 		return this.dateFinOption;
 	}
 
-	public void setDateFinOption(Date dateFinOption) {
+	public void setDateFinOption(Timestamp dateFinOption) {
 		this.dateFinOption = dateFinOption;
 	}
 

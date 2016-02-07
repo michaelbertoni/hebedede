@@ -1,8 +1,9 @@
 package fr.HebeDede.repositories;
 
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import fr.HebeDede.data.DAO;
 import fr.HebeDede.exception.UtilisateurInconnuException;
@@ -26,8 +27,8 @@ public class OptionDAO extends DAO<Option> {
 					"SELECT * FROM option");
 
 			result.moveToInsertRow();
-				result.updateDate("dateDebutOption", (Date) obj.getDateDebutOption());
-				result.updateDate("dateFinOption", (Date) obj.getDateFinOption());
+				result.updateTimestamp("dateDebutOption", obj.getDateDebutOption());
+				result.updateTimestamp("dateFinOption", obj.getDateFinOption());
 				result.updateInt("Utilisateur_idUtilisateur", obj.getUtilisateur().getIdUtilisateur());
 				result.updateInt("Article_idArticle", obj.getArticle().getIdArticle());
 				result.insertRow();
@@ -71,8 +72,8 @@ public class OptionDAO extends DAO<Option> {
 					int id = result.getInt("idOption");
 					if (id == obj.getIdOption()) {
 						result.moveToCurrentRow();
-						result.updateDate("dateDebutOption", (Date) obj.getDateDebutOption());
-						result.updateDate("dateFinOption", (Date) obj.getDateFinOption());
+						result.updateTimestamp("dateDebutOption", obj.getDateDebutOption());
+						result.updateTimestamp("dateFinOption", obj.getDateFinOption());
 						result.close();
 						return true;
 					}
@@ -92,8 +93,8 @@ public class OptionDAO extends DAO<Option> {
 			        ResultSet.CONCUR_READ_ONLY
 			        ).executeQuery("SELECT * FROM option WHERE idOption = " + id);
 			if(result.first()) {
-				option = new Option(result.getDate("dateDebutOption"),
-				result.getDate("dateFinOption"),
+				option = new Option(result.getTimestamp("dateDebutOption"),
+				result.getTimestamp("dateFinOption"),
 				articleDAO.find(result.getInt("Article_idArticle")),
 				userDAO.find(result.getInt("Utilisateur_idUtilisateur")),
 				id);
@@ -104,6 +105,27 @@ public class OptionDAO extends DAO<Option> {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public List<Option> findByArticleId(Integer id) throws UtilisateurInconnuException {
+		List<Option> optionList = new ArrayList<Option>();
+		
+		try {
+			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
+			        ResultSet.CONCUR_READ_ONLY
+			        ).executeQuery("SELECT * FROM option WHERE Article_idArticle = " + id);
+			while (result.next()) {
+				Option option = new Option(result.getTimestamp("dateDebutOption"),
+					result.getTimestamp("dateFinOption"),
+					articleDAO.find(result.getInt("Article_idArticle")),
+					userDAO.find(result.getInt("Utilisateur_idUtilisateur")));
+				optionList.add(option);
+			}
+			result.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return optionList;
 	}
 
 	

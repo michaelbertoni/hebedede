@@ -10,7 +10,7 @@ import fr.HebeDede.model.Bandedessinee;
 
 public class BandedessineeDAO extends DAO<Bandedessinee> {
 	
-	ArticleDAO articleDAO;
+	ArticleDAO articleDAO = new ArticleDAO();
 
 	public BandedessineeDAO() throws ClassNotFoundException, IllegalAccessException {
 		super();
@@ -48,25 +48,6 @@ public class BandedessineeDAO extends DAO<Bandedessinee> {
 
 	@Override
 	public boolean delete(Bandedessinee obj) {
-		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_UPDATABLE).executeQuery(
-					"SELECT * FROM bandedessinee");
-	
-			while (result.next()) {
-					int id = result.getInt("idBandeDessinee");
-					if (id == obj.getIdBandeDessinee()) {
-						result.deleteRow();
-						
-						articleDAO.delete(obj);
-						
-						result.close();
-						return true;
-					}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 		return false;
 	}
 
@@ -79,7 +60,7 @@ public class BandedessineeDAO extends DAO<Bandedessinee> {
 
 			while (result.next()) {
 					int id = result.getInt("idBandeDessinee");
-					if (id == obj.getIdArticle()) {
+					if (id == obj.getIdBandeDessinee()) {
 						result.moveToCurrentRow();
 						result.updateString("auteur", obj.getAuteur());
 						result.updateString("categorie", obj.getCategorie());
@@ -141,7 +122,7 @@ public class BandedessineeDAO extends DAO<Bandedessinee> {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
 			        ResultSet.CONCUR_READ_ONLY
 			        ).executeQuery("SELECT * FROM bandedessinee "
-			        		+ "INNER JOIN article on bandedessinee.article_idArticle = article.idArticle");
+			        		+ "INNER JOIN article on bandedessinee.Article_idArticle = article.idArticle");
 			while (result.next()) {
 				Bandedessinee bd = new Bandedessinee(result.getBoolean("enRayon"),
 						result.getFloat("prix"),
@@ -157,9 +138,41 @@ public class BandedessineeDAO extends DAO<Bandedessinee> {
 						result.getInt("idBandeDessinee"));
 				bdList.add(bd);
 			}
+			result.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return bdList;
+	}
+	
+	public Bandedessinee findByIdArticle(Integer id) {
+		Bandedessinee bd = new Bandedessinee();
+
+		try {
+			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
+			        ResultSet.CONCUR_READ_ONLY
+			        ).executeQuery("SELECT * FROM bandedessinee "
+			        		+ "INNER JOIN article on bandedessinee.Article_idArticle = article.idArticle "
+			        		+ "WHERE Article_idArticle = " + id);
+			if(result.first()) {
+				bd = new Bandedessinee(result.getBoolean("enRayon"),
+						result.getFloat("prix"),
+						id,
+						result.getString("auteur"),
+						result.getString("categorie"),
+						result.getString("collection"),
+						result.getString("description"),
+						result.getString("editeur"),
+						result.getString("etat"),
+						result.getString("libelle"),
+						result.getInt("nbrPages"),
+						result.getInt("idBandeDessinee"));
+				result.close();
+				return bd;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }
