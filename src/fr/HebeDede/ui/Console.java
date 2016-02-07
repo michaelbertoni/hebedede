@@ -1,5 +1,6 @@
 package fr.HebeDede.ui;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -26,7 +27,7 @@ public class Console {
 	public static Scanner sc = new Scanner(System.in);
 	public static Long dureeResa = (long) (4*60*60*1000);
 	
-	public static void promptLogin() throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException {
+	public static void promptLogin() throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
 		AuthentificationService authentificationService = new AuthentificationService();
 		
 		String username = null;
@@ -57,7 +58,7 @@ public class Console {
 		promptMenu();
 	}
 
-	public static void promptMenu() throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException {
+	public static void promptMenu() throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
 		affiche("\n******* Site Web d'HébéDédé *******\n\nMenu principal :");
 		
 		affiche("1. Recherche/Liste des articles\n");
@@ -86,7 +87,7 @@ public class Console {
 		chooseMenu();
 	}
 		
-	public static void chooseMenu() throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException { 
+	public static void chooseMenu() throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException { 
 	    Boolean choixCorrect = false;
 	    int choice = 0;
 	    while (choixCorrect == false) {
@@ -101,7 +102,7 @@ public class Console {
 	    selectMenu(choice);
 	}
 	
-	public static void selectMenu(int choice) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException {
+	public static void selectMenu(int choice) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
 	    if (user == null) {
 	    	switch (choice) {
 		    	case 1:
@@ -120,6 +121,10 @@ public class Console {
 		    	case 0:
 	    			closeApp();
 	    			break;
+	    		default:
+	    			affiche("\nChoix incorrect.");
+					chooseMenu();
+					break;
 	    	}
 	    } else {
 			switch (choice) {
@@ -170,6 +175,10 @@ public class Console {
 	    		case 0:
 	    			closeApp();
 	    			break;
+	    		default:
+	    			affiche("\nChoix incorrect.");
+					chooseMenu();
+					break;
 			}
 	    }
 	}
@@ -188,7 +197,7 @@ public class Console {
 		System.exit(0);
 	}
 	
-	public static void promptArticleList() throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException {
+	public static void promptArticleList() throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
 		BandedessineeDAO bdDAO = new BandedessineeDAO(); 
 		FigurineDAO figDAO = new FigurineDAO();
 		List<Bandedessinee> bdList = bdDAO.findAllBD();
@@ -215,7 +224,7 @@ public class Console {
 		chooseArticleList();
 	}
 	
-	public static void chooseArticleList() throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException {
+	public static void chooseArticleList() throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
 		Boolean choixCorrect = false;
 	    int choice = 0;
 	    while (choixCorrect == false) {
@@ -230,7 +239,7 @@ public class Console {
 	    selectArticleList(choice);
 	}
 	
-	public static void selectArticleList(int choice) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException {
+	public static void selectArticleList(int choice) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
 		if (user == null || user.getRole().equals("Client")) {
 			switch (choice) {
 				case 1:
@@ -245,6 +254,10 @@ public class Console {
 					break;
 				case 0:
 					promptMenu();
+					break;
+				default:
+					affiche("\nChoix incorrect.");
+					chooseArticleList();
 					break;
 			}
 		} else {
@@ -261,22 +274,26 @@ public class Console {
 				case 0:
 					promptMenu();
 					break;
+				default:
+					affiche("\nChoix incorrect.");
+					chooseArticleList();
+					break;
 			}
 		}
 	}
 
-	public static void ouvrirFicheArticle() throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException {
+	public static void ouvrirFicheArticle() throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
 		affiche("Renseigner la référence de l'article à consulter :");
 		Integer idArticle = 0;
 		ArticleDAO artDAO = new ArticleDAO();
 		FigurineDAO figDAO = new FigurineDAO();
 		BandedessineeDAO bdDAO = new BandedessineeDAO();
-		while (!idArticle.equals(artDAO.find(idArticle).getIdArticle())) {
+		do {
 			idArticle = sc.nextInt();
 			if (!idArticle.equals(artDAO.find(idArticle).getIdArticle())) {
 				affiche("La référence article est inexistante, veuillez réessayer.");
 			}
-		}
+		} while (!idArticle.equals(artDAO.find(idArticle).getIdArticle()));
 		Figurine obj1 = figDAO.findByIdArticle(idArticle);
 		Bandedessinee obj2 = bdDAO.findByIdArticle(idArticle);
 		if (obj1 != null) {
@@ -287,13 +304,10 @@ public class Console {
 			Bandedessinee obj = obj2;
 			promptFicheBd(obj);
 		}
-		else {
-			return;
-		}
 	}
 
-	public static void promptFicheBd(Bandedessinee bd) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException {
-		affiche("\n******* Fiche Bande déssinée *******\nRéf. article " + bd.getIdArticle());
+	public static void promptFicheBd(Bandedessinee bd) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
+		affiche("\n******* Fiche Bande déssinée *******\n\nRéf. article " + bd.getIdArticle());
 		affiche("Titre : " + bd.getLibelle());
 		affiche("Collection : " + bd.getCollection());
 		affiche("Auteur : " + bd.getAuteur());
@@ -306,7 +320,10 @@ public class Console {
 		affiche("Disponible en magasin : " + bd.dispo());
 		
 		affiche("\nMenu :");
-		if (user.getRole().equals("Client")) {
+		if (user == null){
+			affiche("0. Retour à la liste des Articles");
+		}
+		else if (user.getRole().equals("Client")) {
 			affiche("1. Réserver la BD");
 			affiche("0. Retour à la liste des Articles");
 		}
@@ -316,21 +333,21 @@ public class Console {
 			affiche("3. Supprimer la figurine du catalogue");
 			affiche("0. Retour à la liste des Articles");
 		}
-		else {
-			affiche("0. Retour à la liste des Articles");
-		}
 		chooseFicheBd(bd);
 	}
 
-	public static void promptFicheFigurine(Figurine fig) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException {
-		affiche("\n******* Fiche Figurine *******\nRéf. article " + fig.getIdArticle());
+	public static void promptFicheFigurine(Figurine fig) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
+		affiche("\n******* Fiche Figurine *******\n\nRéf. article " + fig.getIdArticle());
 		affiche("Description : " + fig.getDescription());
 		affiche("Taille figurine : " + fig.getTaille());
 		affiche("\nPrix : " + fig.getPrix() + "€");
 		affiche("Disponible en magasin : " + fig.dispo());
 		
 		affiche("\nMenu :");
-		if (user.getRole().equals("Client")) {
+		if (user == null){
+			affiche("0. Retour à la liste des Articles");
+		}
+		else if (user.getRole().equals("Client")) {
 			affiche("1. Réserver la figurine");
 			affiche("0. Retour à la liste des Articles");
 		}
@@ -340,14 +357,11 @@ public class Console {
 			affiche("3. Supprimer la figurine du catalogue");
 			affiche("0. Retour à la liste des Articles");
 		}
-		else {
-			affiche("0. Retour à la liste des Articles");
-		}
 		
 		chooseFicheFigurine(fig);
 	}
 
-	public static void chooseFicheBd(Bandedessinee bd) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException {
+	public static void chooseFicheBd(Bandedessinee bd) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
 		Boolean choixCorrect = false;
 	    int choice = 0;
 	    while (choixCorrect == false) {
@@ -362,7 +376,7 @@ public class Console {
 	    selectFicheBd(choice, bd);
 	}
 
-	public static void chooseFicheFigurine(Figurine fig) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException {
+	public static void chooseFicheFigurine(Figurine fig) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
 		Boolean choixCorrect = false;
 	    int choice = 0;
 	    while (choixCorrect == false) {
@@ -377,14 +391,25 @@ public class Console {
 	    selectFicheFigurine(choice, fig);
 	}
 
-	public static void selectFicheBd(int choice, Bandedessinee bd) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException {
-		if (user.getRole().equals("Client")) {
+	public static void selectFicheBd(int choice, Bandedessinee bd) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
+		if (user == null && choice == 0) {
+			promptArticleList();
+		}
+		else if (user == null && choice != 0){
+			affiche("\nChoix incorrect.");
+			chooseFicheBd(bd);
+		}
+		else if (user.getRole().equals("Client")) {
 			switch (choice) {
 				case 1:
 					promptReservation(bd);
 					break;
 				case 0:
 					promptArticleList();
+					break;
+				default:
+					affiche("\nChoix incorrect.");
+					chooseFicheBd(bd);
 					break;
 			}
 		}
@@ -398,34 +423,50 @@ public class Console {
 					break;
 				case 3:
 					affiche("Êtes-vous sûr de vouloir supprimer cette BD (oui/non) ? ");
-					String ok = null;
-					while (!ok.equals("oui") && !ok.equals("non")) {
+					String ok = "";
+					do {
 						ok = sc.nextLine();
 						if (!ok.equals("oui") && !ok.equals("non")) {
 							affiche("Merci de saisir \"oui\" ou \"non\") : . Réessayez : ");
 						}
-					}
+					} while (!ok.equals("oui") && !ok.equals("non"));
 					if (ok.equals("oui")) { supprimerFiche(bd); }
 					if (ok.equals("non")) { promptFicheBd(bd); }
 					break;
 				case 0:
 					promptArticleList();
 					break;
+				default:
+					affiche("\nChoix incorrect.");
+					chooseFicheBd(bd);
+					break;
 			}
 		}
 		else {
-			affiche("0. Retour à la liste des Articles");
+			affiche("\nChoix incorrect.");
+			chooseFicheBd(bd);
 		}
 	}
 
-	public static void selectFicheFigurine(int choice, Figurine fig) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException {
-		if (user.getRole().equals("Client")) {
+	public static void selectFicheFigurine(int choice, Figurine fig) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
+		if (user == null && choice == 0) {
+			promptArticleList();
+		}
+		else if (user == null && choice != 0){
+			affiche("\nChoix incorrect.");
+			chooseFicheFigurine(fig);
+		}
+		else if (user.getRole().equals("Client")) {
 			switch (choice) {
 				case 1:
 					promptReservation(fig);
 					break;
 				case 0:
 					promptArticleList();
+					break;
+				default:
+					affiche("\nChoix incorrect.");
+					chooseFicheFigurine(fig);
 					break;
 			}
 		}
@@ -439,27 +480,32 @@ public class Console {
 					break;
 				case 3:
 					affiche("Êtes-vous sûr de vouloir supprimer cette figurine (oui/non) ? ");
-					String ok = null;
-					while (!ok.equals("oui") && !ok.equals("non")) {
+					String ok = "";
+					do {
 						ok = sc.nextLine();
 						if (!ok.equals("oui") && !ok.equals("non")) {
 							affiche("Merci de saisir \"oui\" ou \"non\") : . Réessayez : ");
 						}
-					}
+					} while (!ok.equals("oui") && !ok.equals("non"));
 					if (ok.equals("oui")) { supprimerFiche(fig); }
 					if (ok.equals("non")) { promptFicheFigurine(fig); }
 					break;
 				case 0:
 					promptArticleList();
 					break;
+				default:
+					affiche("\nChoix incorrect.");
+					chooseFicheFigurine(fig);
+					break;
 			}
 		}
 		else {
-			affiche("0. Retour à la liste des Articles");
+			affiche("\nChoix incorrect.");
+			chooseFicheFigurine(fig);
 		}
 	}
 
-	public static void supprimerFiche(Article obj) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException {
+	public static void supprimerFiche(Article obj) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
 		String typeObj = obj.getClass().getSimpleName();
 		if (typeObj.equals("Bandedessinee")) {
 			Bandedessinee bd = (Bandedessinee) obj;
@@ -482,7 +528,7 @@ public class Console {
 		}
 	}
 
-	public static void modifFiche(Article obj) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException {
+	public static void modifFiche(Article obj) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
 		String typeObj = obj.getClass().getSimpleName();
 		sc.nextLine();
 		if (typeObj.equals("Bandedessinee")) {
@@ -503,46 +549,46 @@ public class Console {
 			String categorie = sc.nextLine();
 			if (!categorie.isEmpty()) { newBd.setCategorie(categorie); }
 			affiche("Nbr. pages : ");
-			Integer nbPages = null;
-			while (nbPages <= 0 && !nbPages.equals(null)) {
+			Integer nbPages = 0;
+			do {
 				nbPages = sc.nextInt();
-				if (nbPages <= 0) {
+				if (nbPages < 0) {
 					affiche("Renseignez un nombre > 0. Réessayez : ");
 				}
-			}
-			if (!nbPages.equals(null)) { newBd.setNbrPages(nbPages); }
+			} while (nbPages < 0);
+			if (nbPages > 0) { newBd.setNbrPages(nbPages); }
 			affiche("Description : ");
 			sc.nextLine();
 			String desc = sc.nextLine();
 			if (!desc.isEmpty()) { newBd.setDescription(desc); }
 			affiche("Etat de la BD (Saisir \"Neuf\" ou \"Occasion\") : ");
-			String etat = null;
-			while (!etat.equals("Neuf") && !etat.equals("Occasion") && !etat.equals(null)) {
+			String etat = "";
+			do {
 				etat = sc.nextLine();
 				if (!etat.equals("Neuf") && !etat.equals("Occasion")) {
 					affiche("Saisie incorrecte. Réessayez : ");
 				}
-			}
-			if (etat.isEmpty()) { newBd.setEtat(etat); }
+			} while (!etat.equals("Neuf") && !etat.equals("Occasion") && !etat.equals(""));
+			if (!etat.equals("")) { newBd.setEtat(etat); }
 			affiche("Prix : ");
-			Float prix = null;
-			while (prix <= 0 && !prix.equals(null)) {
+			Float prix = 0.0f;
+			do {
 				prix = sc.nextFloat();
-				if (prix <= 0) {
+				if (prix < 0) {
 					affiche("Renseignez un prix > 0. Réessayez : ");
 				}
-			}
-			if (!prix.equals(null)) { newBd.setPrix(prix); }
+			} while (prix < 0);
+			if (prix > 0) { newBd.setPrix(prix); }
 			affiche("Disponiblité en magasin (Saisir \"oui\" ou \"non\") : ");
 			sc.nextLine();
-			String dispo = null;
-			while (!dispo.equals("oui") && !dispo.equals("non") && !dispo.equals(null)) {
+			String dispo = "";
+			do {
 				dispo = sc.nextLine();
 				if (!dispo.equals("oui") && !dispo.equals("non")) {
 					affiche("Merci de saisir \"oui\" ou \"non\") : . Réessayez : ");
 				}
-			}
-			if (!dispo.equals(null)) { 
+			} while (!dispo.equals("oui") && !dispo.equals("non") && !dispo.equals(""));
+			if (!dispo.equals("")) { 
 				if (dispo.equals("oui")) { newBd.setEnRayon(true); }
 				if (dispo.equals("non")) { newBd.setEnRayon(false); } 
 			}
@@ -558,33 +604,33 @@ public class Console {
 			String desc = sc.nextLine();
 			if (!desc.isEmpty()) { newFig.setDescription(desc); }
 			affiche("Taille en cm (nombre entier) : ");
-			Integer taille = null;
-			while (taille <= 0 && !taille.equals(null)) {
+			Integer taille = 0;
+			do {
 				taille = sc.nextInt();
-				if (taille <= 0) {
+				if (taille < 0) {
 					affiche("Renseignez un nombre > 0. Réessayez : ");
 				}
-			}
-			if (!taille.equals(null)) { newFig.setTaille(taille); }
+			} while (taille < 0);
+			if (taille > 0) { newFig.setTaille(taille); }
 			affiche("Prix : ");
-			Float prix = null;
-			while (prix <= 0 && !prix.equals(null)) {
+			Float prix = 0.0f;
+			do {
 				prix = sc.nextFloat();
-				if (prix <= 0) {
+				if (prix < 0) {
 					affiche("Renseignez un prix > 0. Réessayez : ");
 				}
-			}
-			if (!prix.equals(null)) { newFig.setPrix(prix); }
+			} while (prix < 0);
+			if (prix > 0) { newFig.setPrix(prix); }
 			affiche("Disponiblité en magasin (Saisir \"oui\" ou \"non\") : ");
 			sc.nextLine();
-			String dispo = null;
-			while (!dispo.equals("oui") && !dispo.equals("non") && !dispo.equals(null)) {
+			String dispo = "";
+			do {
 				dispo = sc.nextLine();
 				if (!dispo.equals("oui") && !dispo.equals("non")) {
 					affiche("Merci de saisir \"oui\" ou \"non\") : . Réessayez : ");
 				}
-			}
-			if (!dispo.equals(null)) { 
+			} while (!dispo.equals("oui") && !dispo.equals("non") && !dispo.equals(""));
+			if (!dispo.equals("")) { 
 				if (dispo.equals("oui")) { newFig.setEnRayon(true); }
 				if (dispo.equals("non")) { newFig.setEnRayon(false); } 
 			}
@@ -597,19 +643,20 @@ public class Console {
 		
 	}
 
-	public static void promptConsultReservation(Article obj) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException {
+	public static void promptConsultReservation(Article obj) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
 		affiche("\nRéservations liées à l'Article réf. " + obj.getIdArticle());
 		OptionDAO optDAO = new OptionDAO();
 		List<Option> optionList = optDAO.findByArticleId(obj.getIdArticle());
 		for (Option option : optionList) {
-			System.out.println("* Réservation n°"+ option.getIdOption() + "de " + option.getUtilisateur().getUsername() + " - Date de réservation : " + option.getDateDebutOption() + " - Date limite : " + option.getDateFinOption());
+			System.out.println("* Réservation n°"+ option.getIdOption() + " de " + option.getUtilisateur().getUsername() + " - Date de réservation : " + option.getDateDebutOption() + " - Date limite : " + option.getDateFinOption());
 		}
 		
 		affiche("\nAppuyer sur entrée pour revenir à la fiche Article");
+		System.in.read();
 		promptFicheArticle(obj);
 	}
 
-	public static void promptReservation(Article obj) throws InterruptedException, ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException {
+	public static void promptReservation(Article obj) throws InterruptedException, ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, IOException {
 		if (obj.getEnRayon().equals(false)) { 
 			affiche("\nL'article n'est pas disponible à la réservation. Redirection vers la fiche article...");
 			Thread.sleep(3000);
@@ -617,7 +664,7 @@ public class Console {
 		}
 		else {
 			affiche("\nVous êtes sur le point de réserver cet article, confirmez-vous l'opération ? (oui/non)");
-			String confirm = null;
+			String confirm = "";
 			while (!confirm.equals("oui") && !confirm.equals("non")) {
 				confirm = sc.nextLine();
 				if (!confirm.equals("oui") && !confirm.equals("non")) {
@@ -644,22 +691,22 @@ public class Console {
 		}
 	}
 
-	public static void promptFicheArticle(Article obj) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException {
+	public static void promptFicheArticle(Article obj) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
 		String typeObj = obj.getClass().getSimpleName();
 		if (typeObj.equals("Bandedessinee")) { promptFicheBd((Bandedessinee) obj); }
 		else if (typeObj.equals("Figurine")) { promptFicheFigurine((Figurine) obj); }
 	}
 
-	public static void promptAjouterArticle() throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException {
+	public static void promptAjouterArticle() throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
 		affiche("\nAjouter une BD ou une figurine ? (Saisir \"bd\" ou \"figurine\") : ");
 		sc.nextLine();
-		String objet = null;
-		while (!objet.equals("figurine") && !objet.equals("bd")) {
+		String objet = "";
+		do {
 			objet = sc.nextLine();
 			if (!objet.equals("figurine") && !objet.equals("bd")) {
 				affiche("Saisie incorrecte. Réessayez : ");
 			}
-		}
+		} while (!objet.equals("figurine") && !objet.equals("bd"));
 		if (objet.equals("bd")) {
 			affiche("\nRenseigner les informations de la BD :\nTitre : ");
 			Bandedessinee newBd = new Bandedessinee();
@@ -673,44 +720,44 @@ public class Console {
 			affiche("Catégorie : ");
 			newBd.setCategorie(sc.nextLine());
 			affiche("Nbr. pages : ");
-			Integer nbPages = null;
-			while (nbPages <= 0) {
+			Integer nbPages = 0;
+			do {
 				nbPages = sc.nextInt();
 				if (nbPages <= 0) {
 					affiche("Renseignez un nombre > 0. Réessayez : ");
 				}
-			}
+			} while (nbPages <= 0);
 			newBd.setNbrPages(nbPages);
 			affiche("Description : ");
 			sc.nextLine();
 			newBd.setDescription(sc.nextLine());
 			affiche("Etat de la BD (Saisir \"Neuf\" ou \"Occasion\") : ");
-			String etat = null;
-			while (!etat.equals("Neuf") && !etat.equals("Occasion")) {
+			String etat = "";
+			do {
 				etat = sc.nextLine();
 				if (!etat.equals("Neuf") && !etat.equals("Occasion")) {
 					affiche("Saisie incorrecte. Réessayez : ");
 				}
-			}
+			} while (!etat.equals("Neuf") && !etat.equals("Occasion"));
 			newBd.setEtat(etat);
 			affiche("Prix : ");
-			Float prix = null;
-			while (prix <= 0) {
+			Float prix = 0.0f;
+			do {
 				prix = sc.nextFloat();
 				if (prix <= 0) {
 					affiche("Renseignez un prix > 0. Réessayez : ");
 				}
-			}
+			} while (prix <= 0);
 			newBd.setPrix(prix);
 			affiche("Disponiblité en magasin (Saisir \"oui\" ou \"non\") : ");
 			sc.nextLine();
-			String dispo = null;
-			while (!dispo.equals("oui") && !dispo.equals("non")) {
+			String dispo = "";
+			do {
 				dispo = sc.nextLine();
 				if (!dispo.equals("oui") && !dispo.equals("non")) {
 					affiche("Merci de saisir \"oui\" ou \"non\") : . Réessayez : ");
 				}
-			}
+			} while (!dispo.equals("oui") && !dispo.equals("non"));
 			if (dispo.equals("oui")) { newBd.setEnRayon(true); }
 			if (dispo.equals("non")) { newBd.setEnRayon(false); }
 			
@@ -726,33 +773,33 @@ public class Console {
 			Figurine newFig = new Figurine();
 			newFig.setDescription(sc.nextLine());
 			affiche("Taille de la figurine (en cm, nombre entier) : ");
-			Integer taille = null;
-			while (taille <= 0) {
+			Integer taille = 0;
+			do {
 				taille = sc.nextInt();
 				if (taille <= 0) {
 					affiche("Renseignez un nombre > 0. Réessayez : ");
 				}
-			}
+			} while (taille <= 0);
 			newFig.setTaille(taille);
 			affiche("Prix : ");
 			sc.nextLine();
-			Float prix = null;
-			while (prix <= 0) {
+			Float prix = 0.0f;
+			do {
 				prix = sc.nextFloat();
 				if (prix <= 0) {
 					affiche("Renseignez un prix > 0. Réessayez : ");
 				}
-			}
+			} while (prix <= 0);
 			newFig.setPrix(prix);
 			affiche("Disponiblité en magasin (Saisir \"oui\" ou \"non\") : ");
 			sc.nextLine();
-			String dispo = null;
-			while (!dispo.equals("oui") && !dispo.equals("non")) {
+			String dispo = "";
+			do {
 				dispo = sc.nextLine();
 				if (!dispo.equals("oui") && !dispo.equals("non")) {
 					affiche("Merci de saisir \"oui\" ou \"non\") : . Réessayez : ");
 				}
-			}
+			} while (!dispo.equals("oui") && !dispo.equals("non"));
 			if (dispo.equals("oui")) { newFig.setEnRayon(true); }
 			if (dispo.equals("non")) { newFig.setEnRayon(false); }
 			

@@ -11,9 +11,9 @@ import fr.HebeDede.model.Option;
 
 public class OptionDAO extends DAO<Option> {
 	
-	UtilisateurDAO userDAO;
+	UtilisateurDAO userDAO = new UtilisateurDAO();
 	
-	ArticleDAO articleDAO;
+	ArticleDAO articleDAO = new ArticleDAO();
 
 	public OptionDAO() throws ClassNotFoundException, IllegalAccessException {
 		super();
@@ -24,7 +24,7 @@ public class OptionDAO extends DAO<Option> {
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE).executeQuery(
-					"SELECT * FROM option");
+					"SELECT * FROM optionarticle");
 
 			result.moveToInsertRow();
 				result.updateTimestamp("dateDebutOption", obj.getDateDebutOption());
@@ -45,7 +45,7 @@ public class OptionDAO extends DAO<Option> {
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE).executeQuery(
-					"SELECT * FROM option");
+					"SELECT * FROM optionarticle");
 
 			while (result.next()) {
 					int id = result.getInt("idOption");
@@ -66,7 +66,7 @@ public class OptionDAO extends DAO<Option> {
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE).executeQuery(
-					"SELECT * FROM option");
+					"SELECT * FROM optionarticle");
 
 			while (result.next()) {
 					int id = result.getInt("idOption");
@@ -91,7 +91,7 @@ public class OptionDAO extends DAO<Option> {
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
 			        ResultSet.CONCUR_READ_ONLY
-			        ).executeQuery("SELECT * FROM option WHERE idOption = " + id);
+			        ).executeQuery("SELECT * FROM optionarticle WHERE idOption = " + id);
 			if(result.first()) {
 				option = new Option(result.getTimestamp("dateDebutOption"),
 				result.getTimestamp("dateFinOption"),
@@ -113,12 +113,13 @@ public class OptionDAO extends DAO<Option> {
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
 			        ResultSet.CONCUR_READ_ONLY
-			        ).executeQuery("SELECT * FROM option WHERE Article_idArticle = " + id);
+			        ).executeQuery("SELECT * FROM optionarticle WHERE Article_idArticle = " + id);
 			while (result.next()) {
 				Option option = new Option(result.getTimestamp("dateDebutOption"),
 					result.getTimestamp("dateFinOption"),
 					articleDAO.find(result.getInt("Article_idArticle")),
-					userDAO.find(result.getInt("Utilisateur_idUtilisateur")));
+					userDAO.find(result.getInt("Utilisateur_idUtilisateur")),
+					result.getInt("idOption"));
 				optionList.add(option);
 			}
 			result.close();
