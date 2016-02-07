@@ -1,5 +1,9 @@
 package fr.HebeDede.repositories;
 
+<<<<<<< HEAD
+=======
+import java.sql.Connection;
+>>>>>>> 1110ca8d1143e08fd04e1a3e755b094692ee4854
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,8 +18,13 @@ public class OptionDAO extends DAO<Option> {
 	
 	ArticleDAO articleDAO;
 
+<<<<<<< HEAD
 	public OptionDAO() throws ClassNotFoundException, IllegalAccessException {
 		super();
+=======
+	public OptionDAO(Connection conn) {
+		super(conn);
+>>>>>>> 1110ca8d1143e08fd04e1a3e755b094692ee4854
 	}
 
 	@Override
@@ -84,7 +93,11 @@ public class OptionDAO extends DAO<Option> {
 	}
 
 	@Override
+<<<<<<< HEAD
 	public Option find(Integer id) throws UtilisateurInconnuException {
+=======
+	public Option find(Integer id) {
+>>>>>>> 1110ca8d1143e08fd04e1a3e755b094692ee4854
 		Option option = new Option();
 
 		try {

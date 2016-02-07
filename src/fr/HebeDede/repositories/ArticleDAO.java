@@ -109,4 +109,9 @@ public class ArticleDAO extends DAO<Article> {
 		return null;
 	}
 	
+<<<<<<< HEAD
+=======
+	
+
+>>>>>>> 1110ca8d1143e08fd04e1a3e755b094692ee4854
 }
