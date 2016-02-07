@@ -1,15 +1,9 @@
 package fr.HebeDede.repositories;
 
-<<<<<<< HEAD
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-=======
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
->>>>>>> 1110ca8d1143e08fd04e1a3e755b094692ee4854
 
 import fr.HebeDede.data.DAO;
 import fr.HebeDede.model.Figurine;
@@ -18,13 +12,8 @@ public class FigurineDAO extends DAO<Figurine> {
 	
 	ArticleDAO articleDAO;
 
-<<<<<<< HEAD
 	public FigurineDAO() throws ClassNotFoundException, IllegalAccessException {
 		super();
-=======
-	public FigurineDAO(Connection conn) {
-		super(conn);
->>>>>>> 1110ca8d1143e08fd04e1a3e755b094692ee4854
 	}
 
 	@Override
@@ -108,13 +97,8 @@ public class FigurineDAO extends DAO<Figurine> {
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
 			        ResultSet.CONCUR_READ_ONLY
-<<<<<<< HEAD
 			        ).executeQuery("SELECT * FROM figurine "
 			        		+ "INNER JOIN article on figurine.article_idArticle = article.idArticle "
-=======
-			        ).executeQuery("SELECT * FROM figurine"
-			        		+ "INNER JOIN article on figurine.article_idArticle = article.idArticle"
->>>>>>> 1110ca8d1143e08fd04e1a3e755b094692ee4854
 			        		+ "WHERE idFigurine = " + id);
 			if(result.first()) {
 				fig = new Figurine(result.getBoolean("enRayon"),
@@ -130,7 +114,6 @@ public class FigurineDAO extends DAO<Figurine> {
 			e.printStackTrace();
 		}
 		return null;
-<<<<<<< HEAD
 	}
 	
 	public List<Figurine> findAllFig() {
@@ -154,8 +137,6 @@ public class FigurineDAO extends DAO<Figurine> {
 			e.printStackTrace();
 		}
 		return figList;
-=======
->>>>>>> 1110ca8d1143e08fd04e1a3e755b094692ee4854
 	}
 
 	

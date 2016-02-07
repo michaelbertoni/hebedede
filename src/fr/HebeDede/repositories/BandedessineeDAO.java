@@ -1,15 +1,9 @@
 package fr.HebeDede.repositories;
 
-<<<<<<< HEAD
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-=======
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
->>>>>>> 1110ca8d1143e08fd04e1a3e755b094692ee4854
 
 import fr.HebeDede.data.DAO;
 import fr.HebeDede.model.Bandedessinee;
@@ -18,13 +12,8 @@ public class BandedessineeDAO extends DAO<Bandedessinee> {
 	
 	ArticleDAO articleDAO;
 
-<<<<<<< HEAD
 	public BandedessineeDAO() throws ClassNotFoundException, IllegalAccessException {
 		super();
-=======
-	public BandedessineeDAO(Connection conn) {
-		super(conn);
->>>>>>> 1110ca8d1143e08fd04e1a3e755b094692ee4854
 	}
 
 	@Override
@@ -120,13 +109,8 @@ public class BandedessineeDAO extends DAO<Bandedessinee> {
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
 			        ResultSet.CONCUR_READ_ONLY
-<<<<<<< HEAD
 			        ).executeQuery("SELECT * FROM bandedessinee "
 			        		+ "INNER JOIN article on bandedessinee.article_idArticle = article.idArticle "
-=======
-			        ).executeQuery("SELECT * FROM bandedessinee"
-			        		+ "INNER JOIN article on bandedessinee.article_idArticle = article.idArticle"
->>>>>>> 1110ca8d1143e08fd04e1a3e755b094692ee4854
 			        		+ "WHERE idBandeDessinee = " + id);
 			if(result.first()) {
 				bd = new Bandedessinee(result.getBoolean("enRayon"),
@@ -149,7 +133,6 @@ public class BandedessineeDAO extends DAO<Bandedessinee> {
 		}
 		return null;
 	}
-<<<<<<< HEAD
 	
 	public List<Bandedessinee> findAllBD() {
 		List<Bandedessinee> bdList = new ArrayList<Bandedessinee>();
@@ -179,7 +162,4 @@ public class BandedessineeDAO extends DAO<Bandedessinee> {
 		}
 		return bdList;
 	}
-=======
->>>>>>> 1110ca8d1143e08fd04e1a3e755b094692ee4854
-
 }
