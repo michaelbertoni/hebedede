@@ -1,20 +1,20 @@
 package fr.HebeDede.repositories;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import fr.HebeDede.data.DAO;
+import fr.HebeDede.exception.UtilisateurInconnuException;
 import fr.HebeDede.model.Utilisateur;
 
 public class UtilisateurDAO extends DAO<Utilisateur> {
 
-	public UtilisateurDAO(Connection conn) {
-		super(conn);
+	public UtilisateurDAO() throws ClassNotFoundException, IllegalAccessException {
+		super();
 	}
 
 	@Override
-	public Utilisateur find(Integer id) {
+	public Utilisateur find(Integer id) throws UtilisateurInconnuException {
 		Utilisateur user = new Utilisateur();
 
 		try {
@@ -25,8 +25,9 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 				user = new Utilisateur(result.getString("username"), result.getString("password"),
 						result.getString("role"), id);
 				result.close();
-				this.connect.close();
 				return user;
+			} else {
+				throw new UtilisateurInconnuException();
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -34,7 +35,7 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 		return null;
 	}
 
-	public Utilisateur findByUsername(String username) {
+	public Utilisateur findByUsername(String username) throws UtilisateurInconnuException {
 		Utilisateur user = null;
 		
 		try {
@@ -45,8 +46,9 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 				user = new Utilisateur(username, result.getString("password"), result.getString("role"),
 						result.getInt("idUtilisateur"));
 				result.close();
-				this.connect.close();
 				return user;
+			} else {
+				throw new UtilisateurInconnuException();
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -55,7 +57,7 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 	}
 
 	@Override
-	public boolean create(Utilisateur obj) {
+	public boolean create(Utilisateur obj) throws UtilisateurInconnuException {
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE).executeQuery(
@@ -70,7 +72,6 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 				result.insertRow();
 				result.beforeFirst();
 				result.close();
-				this.connect.close();
 				return true;
 			}
 		} catch (SQLException e) {
@@ -91,7 +92,6 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 					if (id == obj.getIdUtilisateur()) {
 						result.deleteRow();
 						result.close();
-						this.connect.close();
 						return true;
 					}
 				}
@@ -116,7 +116,6 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 						result.updateString("password", obj.getPassword());
 						result.updateString("role", obj.getRole());
 						result.close();
-						this.connect.close();
 						return true;
 					}
 				}

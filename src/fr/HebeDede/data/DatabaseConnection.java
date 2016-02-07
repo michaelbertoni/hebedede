@@ -13,8 +13,6 @@ public class DatabaseConnection {
 		if(connect == null){
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
-				System.out.println("Driver O.K.");
-
 				connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/HebeDede", "root", "root");
 			} catch (SQLException e) {
 				e.printStackTrace();

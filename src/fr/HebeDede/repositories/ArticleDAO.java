@@ -1,6 +1,5 @@
 package fr.HebeDede.repositories;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -9,8 +8,8 @@ import fr.HebeDede.model.Article;
 
 public class ArticleDAO extends DAO<Article> {
 
-	public ArticleDAO(Connection conn) {
-		super(conn);
+	public ArticleDAO() throws ClassNotFoundException, IllegalAccessException {
+		super();
 	}
 
 	@Override
@@ -19,18 +18,13 @@ public class ArticleDAO extends DAO<Article> {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE).executeQuery(
 					"SELECT * FROM article");
-			if (this.find(obj.getIdArticle()) != null) {
-				System.out.println("L'article existe déjà !");
-			} else {
-				result.moveToInsertRow();
+
+			result.moveToInsertRow();
 				result.updateBoolean("enRayon", obj.getEnRayon());
 				result.updateFloat("prix", obj.getPrix());
 				result.insertRow();
-				result.beforeFirst();
 				result.close();
-				this.connect.close();
 				return true;
-			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -49,7 +43,6 @@ public class ArticleDAO extends DAO<Article> {
 					if (id == obj.getIdArticle()) {
 						result.deleteRow();
 						result.close();
-						this.connect.close();
 						return true;
 					}
 				}
@@ -73,7 +66,6 @@ public class ArticleDAO extends DAO<Article> {
 						result.updateBoolean("enRayon", obj.getEnRayon());
 						result.updateFloat("prix", obj.getPrix());
 						result.close();
-						this.connect.close();
 						return true;
 					}
 				}
@@ -94,7 +86,6 @@ public class ArticleDAO extends DAO<Article> {
 			if(result.first()) {
 				article = new Article(result.getBoolean("enRayon"), result.getFloat("prix"), id);
 				result.close();
-				this.connect.close();
 				return article;
 			}
 		} catch (SQLException e) {
@@ -102,5 +93,20 @@ public class ArticleDAO extends DAO<Article> {
 		}
 		return null;
 	}
-
+	
+	public Integer findLastEntryId() {
+		try {
+			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
+			        ResultSet.CONCUR_READ_ONLY
+			        ).executeQuery("SELECT * FROM article");
+			result.last();
+			Integer id = result.getInt("idArticle");
+			result.close();
+			return id;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 }

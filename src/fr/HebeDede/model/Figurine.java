@@ -10,6 +10,22 @@ public class Figurine extends Article implements Serializable {
 	private String description;
 
 	private Integer taille;
+	
+	public Figurine (Boolean enRayon, Float prix, Integer idArticle, String desc, Integer taille, Integer id) {
+		super(enRayon, prix, idArticle);
+		this.description = desc;
+		this.taille = taille;
+		this.idFigurine = id;
+	}
+	
+	public Figurine (Boolean enRayon, Float prix, String desc, Integer taille) {
+		super(enRayon, prix);
+		this.description = desc;
+		this.taille = taille;
+	}
+	
+	public Figurine(){
+	}
 
 	public Integer getIdFigurine() {
 		return this.idFigurine;

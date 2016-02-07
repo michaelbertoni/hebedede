@@ -2,11 +2,13 @@ package fr.HebeDede.data;
 
 import java.sql.Connection;
 
+import fr.HebeDede.exception.UtilisateurInconnuException;
+
 public abstract class DAO<T> {
 	protected Connection connect = null;
 
-	public DAO(Connection conn) {
-		this.connect = conn;
+	public DAO() throws ClassNotFoundException, IllegalAccessException {
+		this.connect = DatabaseConnection.getInstance();
 	}
 
 	/**
@@ -14,8 +16,9 @@ public abstract class DAO<T> {
 	 * 
 	 * @param obj
 	 * @return boolean
+	 * @throws UtilisateurInconnuException 
 	 */
-	public abstract boolean create(T obj);
+	public abstract boolean create(T obj) throws UtilisateurInconnuException;
 
 	/**
 	 * Méthode pour effacer
@@ -38,6 +41,7 @@ public abstract class DAO<T> {
 	 * 
 	 * @param id
 	 * @return T
+	 * @throws UtilisateurInconnuException 
 	 */
-	public abstract T find(Integer id);
+	public abstract T find(Integer id) throws UtilisateurInconnuException;
 	}

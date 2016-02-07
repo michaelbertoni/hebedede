@@ -15,6 +15,24 @@ public class Option implements Serializable {
 	private Article article;
 
 	private Utilisateur utilisateur;
+	
+	public Option(Date début, Date fin, Article art, Utilisateur user, Integer id) {
+		this.dateDebutOption = début;
+		this.dateFinOption = fin;
+		this.utilisateur = user;
+		this.article = art;
+		this.idOption = id;
+	}
+	
+	public Option(Date début, Date fin, Article art, Utilisateur user) {
+		this.dateDebutOption = début;
+		this.dateFinOption = fin;
+		this.utilisateur = user;
+		this.article = art;
+	}
+	
+	public Option() {
+	}
 
 	public Integer getIdOption() {
 		return idOption;
