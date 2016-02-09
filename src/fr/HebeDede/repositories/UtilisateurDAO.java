@@ -2,6 +2,8 @@ package fr.HebeDede.repositories;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import fr.HebeDede.data.DAO;
 import fr.HebeDede.exception.UtilisateurInconnuException;
@@ -127,6 +129,27 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	public List<Utilisateur> findAll() {
+		List<Utilisateur> userList = new ArrayList<Utilisateur>();
+		Utilisateur user = new Utilisateur();
+
+		try {
+			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
+			        ResultSet.CONCUR_READ_ONLY
+			        ).executeQuery("SELECT * FROM utilisateur");
+			while (result.next()) {
+				user = new Utilisateur(result.getString("username"), result.getString("password"),
+						result.getString("role"), result.getInt("idUtilisateur"));
+				userList.add(user);
+			}
+			result.close();
+			return userList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

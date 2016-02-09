@@ -5,6 +5,8 @@ import java.sql.SQLException;
 
 import fr.HebeDede.data.DAO;
 import fr.HebeDede.model.Article;
+import fr.HebeDede.model.Bandedessinee;
+import fr.HebeDede.model.Figurine;
 
 public class ArticleDAO extends DAO<Article> {
 
@@ -75,25 +77,6 @@ public class ArticleDAO extends DAO<Article> {
 		return false;
 	}
 
-	@Override
-	public Article find(Integer id) {
-		Article article = new Article();
-
-		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
-			        ResultSet.CONCUR_READ_ONLY
-			        ).executeQuery("SELECT * FROM article WHERE idArticle = " + id);
-			if(result.first()) {
-				article = new Article(result.getBoolean("enRayon"), result.getFloat("prix"), id);
-				result.close();
-				return article;
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
 	public Integer findLastEntryId() {
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
@@ -105,6 +88,20 @@ public class ArticleDAO extends DAO<Article> {
 			return id;
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@Override
+	public Article find(Integer id) {
+		BandedessineeDAO bdDAO = new BandedessineeDAO();
+		FigurineDAO figDAO = new FigurineDAO();
+		Bandedessinee bd = bdDAO.findByIdArticle(id);
+		Figurine fig = figDAO.findByIdArticle(id);
+		if (bd != null) {
+			return bd;
+		} else if (fig != null) {
+			return fig;
 		}
 		return null;
 	}

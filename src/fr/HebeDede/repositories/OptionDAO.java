@@ -114,7 +114,7 @@ public class OptionDAO extends DAO<Option> {
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
 			        ResultSet.CONCUR_READ_ONLY
-			        ).executeQuery("SELECT * FROM optionarticle");
+			        ).executeQuery("SELECT * FROM optionarticle ORDER BY dateFinOption DESC");
 			while (result.next()) {
 				Option option = new Option(result.getTimestamp("dateDebutOption"),
 					result.getTimestamp("dateFinOption"),
