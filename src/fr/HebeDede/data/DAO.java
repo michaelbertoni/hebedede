@@ -7,7 +7,7 @@ import fr.HebeDede.exception.UtilisateurInconnuException;
 public abstract class DAO<T> {
 	protected Connection connect = null;
 
-	public DAO() throws ClassNotFoundException, IllegalAccessException {
+	public DAO() {
 		this.connect = DatabaseConnection.getInstance();
 	}
 

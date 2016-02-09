@@ -8,11 +8,14 @@ public class DatabaseConnection {
 	
 	private static Connection connect;
 
-	public static Connection getInstance() throws ClassNotFoundException,
-			IllegalAccessException {
+	public static Connection getInstance() {
 		if(connect == null){
 			try {
-				Class.forName("com.mysql.jdbc.Driver");
+				try {
+					Class.forName("com.mysql.jdbc.Driver");
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
 				connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/HebeDede", "root", "root");
 			} catch (SQLException e) {
 				e.printStackTrace();

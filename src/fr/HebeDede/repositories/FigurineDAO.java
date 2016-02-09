@@ -12,7 +12,7 @@ public class FigurineDAO extends DAO<Figurine> {
 	
 	ArticleDAO articleDAO = new ArticleDAO();
 
-	public FigurineDAO() throws ClassNotFoundException, IllegalAccessException {
+	public FigurineDAO() {
 		super();
 	}
 

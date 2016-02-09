@@ -9,12 +9,12 @@ import fr.HebeDede.model.Utilisateur;
 
 public class UtilisateurDAO extends DAO<Utilisateur> {
 
-	public UtilisateurDAO() throws ClassNotFoundException, IllegalAccessException {
+	public UtilisateurDAO() {
 		super();
 	}
 
 	@Override
-	public Utilisateur find(Integer id) throws UtilisateurInconnuException {
+	public Utilisateur find(Integer id) {
 		Utilisateur user = new Utilisateur();
 
 		try {
@@ -31,11 +31,13 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} catch (UtilisateurInconnuException e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
 
-	public Utilisateur findByUsername(String username) throws UtilisateurInconnuException {
+	public Utilisateur findByUsername(String username) {
 		Utilisateur user = null;
 		
 		try {
@@ -52,12 +54,14 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} catch (UtilisateurInconnuException e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
 
 	@Override
-	public boolean create(Utilisateur obj) throws UtilisateurInconnuException {
+	public boolean create(Utilisateur obj) {
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE).executeQuery(

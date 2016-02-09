@@ -8,7 +8,7 @@ import fr.HebeDede.model.Article;
 
 public class ArticleDAO extends DAO<Article> {
 
-	public ArticleDAO() throws ClassNotFoundException, IllegalAccessException {
+	public ArticleDAO() {
 		super();
 	}
 

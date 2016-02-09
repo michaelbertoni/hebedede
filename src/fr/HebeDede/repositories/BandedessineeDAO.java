@@ -12,7 +12,7 @@ public class BandedessineeDAO extends DAO<Bandedessinee> {
 	
 	ArticleDAO articleDAO = new ArticleDAO();
 
-	public BandedessineeDAO() throws ClassNotFoundException, IllegalAccessException {
+	public BandedessineeDAO() {
 		super();
 	}
 

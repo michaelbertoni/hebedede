@@ -1,13 +1,11 @@
 package fr.HebeDede.service;
 
-import fr.HebeDede.exception.UtilisateurInconnuException;
 import fr.HebeDede.model.Utilisateur;
 import fr.HebeDede.repositories.UtilisateurDAO;
 
 public class AuthentificationService {
 	
-	public Boolean login(String username, String password) throws UtilisateurInconnuException, ClassNotFoundException,
-			IllegalAccessException {
+	public Boolean login(String username, String password) {
 		Utilisateur utilisateur;
 		Boolean connected = false;
 		UtilisateurDAO utilisateurDAO = new UtilisateurDAO();

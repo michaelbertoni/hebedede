@@ -3,12 +3,12 @@ package fr.HebeDede.ui;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
 import fr.HebeDede.data.DatabaseConnection;
-import fr.HebeDede.exception.UtilisateurInconnuException;
 import fr.HebeDede.model.Article;
 import fr.HebeDede.model.Bandedessinee;
 import fr.HebeDede.model.Figurine;
@@ -27,7 +27,7 @@ public class Console {
 	public static Scanner sc = new Scanner(System.in);
 	public static Long dureeResa = (long) (4*60*60*1000);
 	
-	public static void promptLogin() throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
+	public static void promptLogin() {
 		AuthentificationService authentificationService = new AuthentificationService();
 		
 		String username = null;
@@ -35,20 +35,18 @@ public class Console {
 		
 		Boolean userConnected = false;
 		while(userConnected != true) {
-			try {
-				sc.nextLine();
-				
-				affiche("Login :");
-				username = sc.nextLine();
-				
-				affiche("Password :");
-				password = sc.nextLine();
-				
-				userConnected = authentificationService.login(username, password);
-				if (userConnected != true) {
-					affiche("Mot de passe incorrect ! Réessayez.");
-				}
-			} catch (UtilisateurInconnuException e) { }
+			sc.nextLine();
+			
+			affiche("Login :");
+			username = sc.nextLine();
+			
+			affiche("Password :");
+			password = sc.nextLine();
+			
+			userConnected = authentificationService.login(username, password);
+			if (userConnected != true) {
+				affiche("Mot de passe incorrect ! Réessayez.");
+			}
 		}
 		UtilisateurDAO userDAO = new UtilisateurDAO();
 		user = userDAO.findByUsername(username);
@@ -58,7 +56,7 @@ public class Console {
 		promptMenu();
 	}
 
-	public static void promptMenu() throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
+	public static void promptMenu() {
 		affiche("\n******* Site Web d'HébéDédé *******\n\nMenu principal :");
 		
 		affiche("1. Recherche/Liste des articles\n");
@@ -87,7 +85,7 @@ public class Console {
 		chooseMenu();
 	}
 		
-	public static void chooseMenu() throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException { 
+	public static void chooseMenu() { 
 	    Boolean choixCorrect = false;
 	    int choice = 0;
 	    while (choixCorrect == false) {
@@ -102,7 +100,7 @@ public class Console {
 	    selectMenu(choice);
 	}
 	
-	public static void selectMenu(int choice) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
+	public static void selectMenu(int choice) {
 	    if (user == null) {
 	    	switch (choice) {
 		    	case 1:
@@ -134,13 +132,13 @@ public class Console {
 		    	case 2:
 		    		switch (user.getRole()) {
 		    			case "Employe":
-		    				promptOptionsList();
+		    				promptOptionsListClient(user);
 		    				break;
 		    			case "Chef":
-		    				promptOptionsList();
+		    				promptOptionsListAll();
 		    				break;
 		    			case "Client":
-		    				promptOptionsList();
+		    				promptOptionsListAll();
 		    				break;
 		    		}
 		    		break;
@@ -182,7 +180,7 @@ public class Console {
 			}
 	    }
 	}
-	
+
 	public static void promptRechercheMultiCriteres() {
 		// TODO Auto-generated method stub
 	}
@@ -191,13 +189,13 @@ public class Console {
 		try {
 			DatabaseConnection.getInstance().close();
 			sc.close();
-		} catch (ClassNotFoundException | IllegalAccessException | SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		System.exit(0);
 	}
 	
-	public static void promptArticleList() throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
+	public static void promptArticleList() {
 		BandedessineeDAO bdDAO = new BandedessineeDAO(); 
 		FigurineDAO figDAO = new FigurineDAO();
 		List<Bandedessinee> bdList = bdDAO.findAllBD();
@@ -224,7 +222,7 @@ public class Console {
 		chooseArticleList();
 	}
 	
-	public static void chooseArticleList() throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
+	public static void chooseArticleList() {
 		Boolean choixCorrect = false;
 	    int choice = 0;
 	    while (choixCorrect == false) {
@@ -239,7 +237,7 @@ public class Console {
 	    selectArticleList(choice);
 	}
 	
-	public static void selectArticleList(int choice) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
+	public static void selectArticleList(int choice) {
 		if (user == null || user.getRole().equals("Client")) {
 			switch (choice) {
 				case 1:
@@ -282,7 +280,7 @@ public class Console {
 		}
 	}
 
-	public static void ouvrirFicheArticle() throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
+	public static void ouvrirFicheArticle() {
 		affiche("Renseigner la référence de l'article à consulter :");
 		Integer idArticle = 0;
 		ArticleDAO artDAO = new ArticleDAO();
@@ -306,7 +304,7 @@ public class Console {
 		}
 	}
 
-	public static void promptFicheBd(Bandedessinee bd) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
+	public static void promptFicheBd(Bandedessinee bd) {
 		affiche("\n******* Fiche Bande déssinée *******\n\nRéf. article " + bd.getIdArticle());
 		affiche("Titre : " + bd.getLibelle());
 		affiche("Collection : " + bd.getCollection());
@@ -336,7 +334,7 @@ public class Console {
 		chooseFicheBd(bd);
 	}
 
-	public static void promptFicheFigurine(Figurine fig) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
+	public static void promptFicheFigurine(Figurine fig) {
 		affiche("\n******* Fiche Figurine *******\n\nRéf. article " + fig.getIdArticle());
 		affiche("Description : " + fig.getDescription());
 		affiche("Taille figurine : " + fig.getTaille());
@@ -361,7 +359,7 @@ public class Console {
 		chooseFicheFigurine(fig);
 	}
 
-	public static void chooseFicheBd(Bandedessinee bd) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
+	public static void chooseFicheBd(Bandedessinee bd) {
 		Boolean choixCorrect = false;
 	    int choice = 0;
 	    while (choixCorrect == false) {
@@ -376,7 +374,7 @@ public class Console {
 	    selectFicheBd(choice, bd);
 	}
 
-	public static void chooseFicheFigurine(Figurine fig) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
+	public static void chooseFicheFigurine(Figurine fig) {
 		Boolean choixCorrect = false;
 	    int choice = 0;
 	    while (choixCorrect == false) {
@@ -391,7 +389,7 @@ public class Console {
 	    selectFicheFigurine(choice, fig);
 	}
 
-	public static void selectFicheBd(int choice, Bandedessinee bd) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
+	public static void selectFicheBd(int choice, Bandedessinee bd) {
 		if (user == null && choice == 0) {
 			promptArticleList();
 		}
@@ -448,7 +446,7 @@ public class Console {
 		}
 	}
 
-	public static void selectFicheFigurine(int choice, Figurine fig) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
+	public static void selectFicheFigurine(int choice, Figurine fig) {
 		if (user == null && choice == 0) {
 			promptArticleList();
 		}
@@ -505,30 +503,31 @@ public class Console {
 		}
 	}
 
-	public static void supprimerFiche(Article obj) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
+	public static void supprimerFiche(Article obj) {
 		String typeObj = obj.getClass().getSimpleName();
 		if (typeObj.equals("Bandedessinee")) {
 			Bandedessinee bd = (Bandedessinee) obj;
 			ArticleDAO dao = new ArticleDAO();
 			dao.delete(bd);
 			affiche("Elément supprimé du catalogue, retour à la liste des Articles");
-			Thread.sleep(3000);
+			sleep(3000);
 			promptArticleList();
 		} else if (typeObj.equals("Figurine")) {
 			Figurine fig = (Figurine) obj;
 			ArticleDAO dao = new ArticleDAO();
 			dao.delete(fig);
 			affiche("Elément supprimé du catalogue, retour à la liste des Articles");
-			Thread.sleep(3000);
+			sleep(3000);
 			promptArticleList();
 		}
 		else {
 			affiche("Erreur à la suppression de l'élément. Retour à la liste des Articles");
+			sleep(3000);
 			promptArticleList();
 		}
 	}
 
-	public static void modifFiche(Article obj) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
+	public static void modifFiche(Article obj) {
 		String typeObj = obj.getClass().getSimpleName();
 		sc.nextLine();
 		if (typeObj.equals("Bandedessinee")) {
@@ -596,6 +595,7 @@ public class Console {
 			bdDAO.update(newBd);
 			
 			affiche("La BD a été mise à jour avec succès, redirection vers la fiche article");
+			sleep(3000);
 			promptFicheBd(newBd);
 			
 		} else if (typeObj.equals("Figurine")) {
@@ -638,28 +638,169 @@ public class Console {
 			figDAO.update(newFig);
 			
 			affiche("La BD a été mise à jour avec succès, redirection vers la fiche article");
+			sleep(3000);
 			promptFicheFigurine(newFig);
 		}
 		
 	}
+	
+	
+	public static void promptOptionsListClient(Utilisateur user) {
+		affiche ("\n Réservations liées à l'utilisateur " + user.getUsername() + " :");
+		OptionDAO optionDAO = new OptionDAO();
+		List<Option> optionList = optionDAO.findByUtilisateur(user);
+		List<Integer> optionId = new ArrayList<Integer>();
+		List<String> menuList = new ArrayList<String>();
+		for (Option option : optionList) {
+			BandedessineeDAO bdDAO = new BandedessineeDAO();
+			FigurineDAO figDAO = new FigurineDAO();
+			Bandedessinee bd = bdDAO.findByIdArticle(option.getArticle().getIdArticle());
+			Figurine fig = figDAO.findByIdArticle(option.getArticle().getIdArticle());
+			if (bd != null) {
+				affiche("\nRéservation n°" + option.getIdOption() + " - Article n°: " + option.getArticle().getIdArticle() + 
+						"\nLibellé : " + bd.getLibelle() + " - Collection : " + bd.getCollection() + 
+						"\nArticle disponible jusqu'au " + option.getDateFinOption().getTime());
+			}
+			else if (fig != null) {
+				affiche("\nRéservation n°" + option.getIdOption() + " - Article n°: " + option.getArticle().getIdArticle() + 
+						"\nLibellé : " + fig.getDescription() + 
+						"\nArticle disponible jusqu'au " + option.getDateFinOption().getTime());
+			}
+			menuList.add(option.getArticle().getIdArticle() + ". Annuler la réservation n°" + option.getIdOption());
+			optionId.add(option.getIdOption());
+		}
+		affiche("Menu :");
+		for (String string : menuList) {
+			affiche(string);
+		}
+		affiche("\n0. Retour au menu principal");
+		
+		Boolean choixCorrect = false;
+		Integer choice = 0;
+	    while (choixCorrect == false) {
+	    	affiche("\nVeuillez renseigner votre choix");
+	    	choice = sc.nextInt();
+	    	if (!optionId.contains(choice)) {
+	    		affiche("\nChoix incorrect, cette réservation ne vous concerne pas.");
+	    	} else {
+	    		choixCorrect = true;
+	    	}
+	    }
+	    if (choice != 0) {
+	    	Option option = optionDAO.find(choice);
+	    	promptAnnulerOption(option, user);
+	    }
+	    else if (choice == 0) {
+	    	promptMenu();
+	    }
+		
+	}
 
-	public static void promptConsultReservation(Article obj) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
+	public static void promptOptionsListAll() {
+		affiche("\n******* Liste des Réservation *******\n");
+		OptionDAO optionDAO = new OptionDAO();
+		List<Option> optionList = optionDAO.findAll();
+		List<Integer> optionId = new ArrayList<Integer>();
+		for (Option option : optionList) {
+			BandedessineeDAO bdDAO = new BandedessineeDAO();
+			FigurineDAO figDAO = new FigurineDAO();
+			Bandedessinee bd = bdDAO.findByIdArticle(option.getArticle().getIdArticle());
+			Figurine fig = figDAO.findByIdArticle(option.getArticle().getIdArticle());
+			if (bd != null) {
+				affiche("\nRéservation n°" + option.getIdOption() + " - Article n°: " + option.getArticle().getIdArticle() + 
+						"\nLibellé : " + bd.getLibelle() + " - Collection : " + bd.getCollection() + 
+						"\nArticle disponible jusqu'au " + option.getDateFinOption().getTime());
+			}
+			else if (fig != null) {
+				affiche("\nRéservation n°" + option.getIdOption() + " - Article n°: " + option.getArticle().getIdArticle() + 
+						"\nLibellé : " + fig.getDescription() + 
+						"\nArticle disponible jusqu'au " + option.getDateFinOption().getTime());
+			}
+			optionId.add(option.getIdOption());
+		}
+		affiche("Menu :");
+		affiche("1. Annuler une réservation");
+		affiche("\n0. Retour au menu principal");
+		
+		Boolean choixCorrect = false;
+		Integer choice = 0;
+	    while (choixCorrect == false) {
+	    	affiche("\nVeuillez renseigner votre choix");
+	    	choice = sc.nextInt();
+	    	if (choice != 1 && choice != 0) {
+	    		affiche("\nChoix incorrect.");
+	    	} else {
+	    		choixCorrect = true;
+	    	}
+	    }
+	    if (choice != 0) {
+	    	affiche("\nRenseigner le numero de l'option à annuler : ");
+	    	Integer idOption = 0;
+	    	do {
+	    		idOption = sc.nextInt();
+	    		if (!optionId.contains(idOption)) {
+	    			affiche("Le numéro d'option renseigné est incorrect.");
+	    		}
+	    	} while (!optionId.contains(idOption));
+	    	Option option = optionDAO.find(idOption);
+	    	Utilisateur optionUser = option.getUtilisateur();
+	    	promptAnnulerOption(option, optionUser);
+	    }
+	    else if (choice == 0) {
+	    	promptMenu();
+	    }
+	}
+
+	public static void promptAnnulerOption(Option option, Utilisateur user) {
+		OptionDAO optDAO = new OptionDAO();
+		List<Option> optionList = optDAO.findByUtilisateur(user);
+		if (!optionList.contains(option)) {
+			affiche("Cette option n'appartient pas à l'utilisateur " + user.getUsername() + ", annulation impossible.");
+		}
+		else {		
+			affiche("\nVous êtes sur le point d'annuler l'option n°"+ option.getIdOption() + ".\nÊtes-vous sûr ? (oui/non) ");
+			String choix = "";
+			do {
+				sc.nextLine();
+				choix = sc.nextLine();
+				if (!choix.equals("oui") && !choix.equals("non")) {
+					affiche("\nChoix incorrect.");
+				}
+			} while (choix.equals("") && !choix.equals("oui") && !choix.equals("non"));
+			
+			if(choix.equals("oui")) {
+				optDAO.delete(option);
+				affiche("Réservation annulée !");
+			}
+		}
+		
+		affiche("Retour au menu principal...");
+		sleep(3000);
+		promptMenu();
+		
+	}
+
+	public static void promptConsultReservation(Article obj) {
 		affiche("\nRéservations liées à l'Article réf. " + obj.getIdArticle());
 		OptionDAO optDAO = new OptionDAO();
-		List<Option> optionList = optDAO.findByArticleId(obj.getIdArticle());
+		List<Option> optionList = optDAO.findByArticle(obj);
 		for (Option option : optionList) {
 			System.out.println("* Réservation n°"+ option.getIdOption() + " de " + option.getUtilisateur().getUsername() + " - Date de réservation : " + option.getDateDebutOption() + " - Date limite : " + option.getDateFinOption());
 		}
 		
 		affiche("\nAppuyer sur entrée pour revenir à la fiche Article");
-		System.in.read();
+		try {
+			System.in.read();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		promptFicheArticle(obj);
 	}
 
-	public static void promptReservation(Article obj) throws InterruptedException, ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, IOException {
+	public static void promptReservation(Article obj) {
 		if (obj.getEnRayon().equals(false)) { 
 			affiche("\nL'article n'est pas disponible à la réservation. Redirection vers la fiche article...");
-			Thread.sleep(3000);
+			sleep(3000);
 			promptFicheArticle(obj);
 		}
 		else {
@@ -680,24 +821,24 @@ public class Console {
 				optDAO.create(resa);
 				affiche("Votre article est réservé ! Vous pouvez le retirer en magasin dans un délai de 4 heures.");
 				affiche("Retour sur la fiche Article...");
-				Thread.sleep(3000);
+				sleep(3000);
 				promptFicheArticle(obj);
 			}
 			if (confirm.equals("non")) {
 				affiche("Redirection vers la fiche Article...");
-				Thread.sleep(3000);
+				sleep(3000);
 				promptFicheArticle(obj);
 			}
 		}
 	}
 
-	public static void promptFicheArticle(Article obj) throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
+	public static void promptFicheArticle(Article obj) {
 		String typeObj = obj.getClass().getSimpleName();
 		if (typeObj.equals("Bandedessinee")) { promptFicheBd((Bandedessinee) obj); }
 		else if (typeObj.equals("Figurine")) { promptFicheFigurine((Figurine) obj); }
 	}
 
-	public static void promptAjouterArticle() throws ClassNotFoundException, IllegalAccessException, UtilisateurInconnuException, InterruptedException, IOException {
+	public static void promptAjouterArticle() {
 		affiche("\nAjouter une BD ou une figurine ? (Saisir \"bd\" ou \"figurine\") : ");
 		sc.nextLine();
 		String objet = "";
@@ -765,6 +906,7 @@ public class Console {
 			bdDAO.create(newBd);
 			
 			affiche("La BD a été créée avec succès, redirection vers la fiche de la BD");
+			sleep(3000);
 			ArticleDAO artDAO = new ArticleDAO();
 			promptFicheBd(bdDAO.findByIdArticle(artDAO.findLastEntryId()));
 		}
@@ -807,6 +949,7 @@ public class Console {
 			figDAO.create(newFig);
 			
 			affiche("La figurine a été créée avec succès, redirection vers la fiche de la figurine");
+			sleep(3000);
 			ArticleDAO artDAO = new ArticleDAO();
 			promptFicheFigurine(figDAO.findByIdArticle(artDAO.findLastEntryId()));
 		}
@@ -823,17 +966,20 @@ public class Console {
 		
 	}
 
-	public static void promptOptionsList() {
-		// TODO Auto-generated method stub
-		
-	}
-
 	public static void promptCreerCompte() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public static void affiche(String message) {
+	private static void affiche(String message) {
 		System.out.println(message);
+	}
+	
+	private static void sleep(long ms) {
+		try {
+			Thread.sleep(ms);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 }
