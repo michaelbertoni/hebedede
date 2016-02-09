@@ -7,6 +7,7 @@ import java.util.List;
 
 import fr.HebeDede.data.DAO;
 import fr.HebeDede.model.Figurine;
+import fr.HebeDede.service.ConsoleService;
 
 public class FigurineDAO extends DAO<Figurine> {
 	
@@ -17,7 +18,7 @@ public class FigurineDAO extends DAO<Figurine> {
 	}
 
 	@Override
-	public boolean create(Figurine obj) {
+	public void create(Figurine obj) {
 		try {
 			articleDAO.create(obj);
 			Integer articleId = articleDAO.findLastEntryId();
@@ -33,20 +34,18 @@ public class FigurineDAO extends DAO<Figurine> {
 				result.insertRow();
 				
 				result.close();
-				return true;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			ConsoleService.affiche("Echec de l'opération");
 		}
-		return false;
 	}
 
 	@Override
-	public boolean delete(Figurine obj) {
-		return false;
+	public void delete(Figurine obj) {
+		
 	}
 
 	@Override
-	public boolean update(Figurine obj) {
+	public void update(Figurine obj) {
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE).executeQuery(
@@ -62,13 +61,37 @@ public class FigurineDAO extends DAO<Figurine> {
 						articleDAO.update(obj);
 						
 						result.close();
-						return true;
 					}
 				}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			ConsoleService.affiche("Echec de l'opération");
 		}
-		return false;
+	}
+
+	public List<Figurine> findAllFig() {
+		List<Figurine> figList = new ArrayList<Figurine>();
+		
+		try {
+			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
+			        ResultSet.CONCUR_READ_ONLY
+			        ).executeQuery("SELECT * FROM figurine "
+			        		+ "INNER JOIN article on figurine.Article_idArticle = article.idArticle");
+			while (result.next()) {
+				Figurine fig = new Figurine(result.getBoolean("enRayon"),
+						result.getFloat("prix"),
+						result.getInt("idArticle"),
+						result.getString("description"),
+						result.getInt("taille"),
+						result.getInt("idFigurine"));
+				figList.add(fig);
+			}
+			result.close();
+			return figList;
+		} catch (SQLException e) {
+			ConsoleService.affiche("Echec de l'opération");
+			return null;
+		}
+	
 	}
 
 	@Override
@@ -92,38 +115,15 @@ public class FigurineDAO extends DAO<Figurine> {
 				return fig;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			ConsoleService.affiche("Echec de l'opération");
+			return null;
 		}
 		return null;
 	}
 	
-	public List<Figurine> findAllFig() {
-		List<Figurine> figList = new ArrayList<Figurine>();
-		
-		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
-			        ResultSet.CONCUR_READ_ONLY
-			        ).executeQuery("SELECT * FROM figurine "
-			        		+ "INNER JOIN article on figurine.Article_idArticle = article.idArticle");
-			while (result.next()) {
-				Figurine fig = new Figurine(result.getBoolean("enRayon"),
-						result.getFloat("prix"),
-						result.getInt("idArticle"),
-						result.getString("description"),
-						result.getInt("taille"),
-						result.getInt("idFigurine"));
-				figList.add(fig);
-			}
-			result.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return figList;
-	}
-
 	public Figurine findByIdArticle(Integer id) {
 		Figurine fig = new Figurine();
-
+	
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
 			        ResultSet.CONCUR_READ_ONLY
@@ -141,7 +141,8 @@ public class FigurineDAO extends DAO<Figurine> {
 				return fig;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			ConsoleService.affiche("Echec de l'opération");
+			return null;
 		}
 		return null;
 	}

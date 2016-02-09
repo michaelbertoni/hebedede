@@ -1,5 +1,6 @@
 package fr.HebeDede.ui;
 
+import java.util.InputMismatchException;
 import java.util.List;
 
 import fr.HebeDede.model.Article;
@@ -23,24 +24,27 @@ public class ConsoleArticle {
 		List<Figurine> figList = figDAO.findAllFig();
 		ConsoleService.affiche("\n******* Liste des Articles *******\n");
 		for (Bandedessinee bd : bdList) {
-			ConsoleService.affiche("Bande dessinée - Réf. article " + bd.getIdArticle() + " | Titre : " + bd.getLibelle() + " | Collection : " + bd.getCollection()  + " | Prix : " + bd.getPrix() + "€" + " | Disponible : " + bd.dispo());
+			ConsoleService.affiche("Bande dessinée - Réf. article " + bd.getIdArticle() + " | Titre : " + bd.getLibelle() + " | Collection : " + bd.getCollection()  + " | Prix : " + bd.getPrix() + "€" + " | Disponible : " + bd.afficheDispo());
 		}
 		for (Figurine fig : figList) {
-			ConsoleService.affiche("Figurine - Réf. article " + fig.getIdArticle() + " | Description : " + fig.getDescription() + " | Prix : " + fig.getPrix() + "€" + " | Disponible : " + fig.dispo());
+			ConsoleService.affiche("Figurine - Réf. article " + fig.getIdArticle() + " | Description : " + fig.getDescription() + " | Prix : " + fig.getPrix() + "€" + " | Disponible : " + fig.afficheDispo());
 		}
 		
 		ConsoleService.affiche("\nMenu :");
+		Integer choice = 0;
 		if (Console.user == null || Console.user.getRole().equals("Client")) {
 			ConsoleService.affiche("1. Afficher les détails d'un article");
 			ConsoleService.affiche("2. Recherche multi-critères d'articles");
 			ConsoleService.affiche("0. Retour au menu principal");
+			choice = ConsoleService.choixMenuMinMax(0,2);
 		} else {
 			ConsoleService.affiche("1. Afficher les détails d'un article");
 			ConsoleService.affiche("2. Recherche multi-critères d'articles");
 			ConsoleService.affiche("3. Ajouter un article");
 			ConsoleService.affiche("0. Retour au menu principal");
+			choice = ConsoleService.choixMenuMinMax(0,3);
 		}
-		Integer choice = ConsoleService.choixMenuMinMax(0,3);
+		
 		selectArticleList(choice);
 	}
 
@@ -96,11 +100,17 @@ public class ConsoleArticle {
 		ConsoleService.affiche("Renseigner la référence de l'article à consulter :");
 		Integer idArticle = 0;
 		do {
-			idArticle = Console.sc.nextInt();
-			if (!idArticle.equals(articleDAO.find(idArticle).getIdArticle())) {
-				ConsoleService.affiche("La référence article est inexistante, veuillez réessayer.");
+			try {
+				idArticle = Console.sc.nextInt();
+				if (articleDAO.find(idArticle) == null) {
+					ConsoleService.affiche("La référence article est inexistante, veuillez réessayer.");
+				}
+			} catch (InputMismatchException e) {
+				ConsoleService.affiche("Seuls les nombres sont acceptez, veuillez réessayer.");
 			}
-		} while (!idArticle.equals(articleDAO.find(idArticle).getIdArticle()));
+		} while (articleDAO.find(idArticle) == null);
+			Console.sc.nextLine();
+			
 		Article article = articleDAO.find(idArticle);
 		if (article.getClass().getSimpleName().equals("Figurine")) {
 			promptFicheFigurine((Figurine) article);
@@ -121,50 +131,56 @@ public class ConsoleArticle {
 		ConsoleService.affiche("Description : " + bd.getDescription());
 		ConsoleService.affiche("\nEtat : " + bd.getEtat());
 		ConsoleService.affiche("Prix : " + bd.getPrix() + "€");
-		ConsoleService.affiche("Disponible en magasin : " + bd.dispo());
+		ConsoleService.affiche("Disponible en magasin : " + bd.afficheDispo());
 		
 		ConsoleService.affiche("\nMenu :");
+		Integer choice = 0;
 		if (Console.user == null){
 			ConsoleService.affiche("0. Retour à la liste des Articles");
+			choice = ConsoleService.choixMenuMinMax(0,0);
 		}
 		else if (Console.user.getRole().equals("Client")) {
 			ConsoleService.affiche("1. Réserver la BD");
 			ConsoleService.affiche("0. Retour à la liste des Articles");
+			choice = ConsoleService.choixMenuMinMax(0,1);
 		}
 		else if (Console.user.getRole().equals("Employe") || Console.user.getRole().equals("Chef")) {
 			ConsoleService.affiche("1. Consulter les réservations de la BD");
 			ConsoleService.affiche("2. Modifier les informations de la BD");
 			ConsoleService.affiche("3. Supprimer la figurine du catalogue");
 			ConsoleService.affiche("0. Retour à la liste des Articles");
+			choice = ConsoleService.choixMenuMinMax(0,3);
 		}
 		
-		Integer choice = ConsoleService.choixMenuMinMax(0,3);
 		selectFicheBd(choice, bd);
 	}
 
 	public static void promptFicheFigurine(Figurine fig) {
 		ConsoleService.affiche("\n******* Fiche Figurine *******\n\nRéf. article " + fig.getIdArticle());
 		ConsoleService.affiche("Description : " + fig.getDescription());
-		ConsoleService.affiche("Taille figurine : " + fig.getTaille());
+		ConsoleService.affiche("Taille figurine : " + fig.getTaille() + "cm");
 		ConsoleService.affiche("\nPrix : " + fig.getPrix() + "€");
-		ConsoleService.affiche("Disponible en magasin : " + fig.dispo());
+		ConsoleService.affiche("Disponible en magasin : " + fig.afficheDispo());
 		
 		ConsoleService.affiche("\nMenu :");
+		Integer choice = 0;
 		if (Console.user == null){
 			ConsoleService.affiche("0. Retour à la liste des Articles");
+			choice = ConsoleService.choixMenuMinMax(0,0);
 		}
 		else if (Console.user.getRole().equals("Client")) {
 			ConsoleService.affiche("1. Réserver la figurine");
 			ConsoleService.affiche("0. Retour à la liste des Articles");
+			choice = ConsoleService.choixMenuMinMax(0,1);
 		}
 		else if (Console.user.getRole().equals("Employe") || Console.user.getRole().equals("Chef")) {
 			ConsoleService.affiche("1. Consulter les réservations de la figurine");
 			ConsoleService.affiche("2. Modifier les informations de la figurine");
 			ConsoleService.affiche("3. Supprimer la figurine du catalogue");
 			ConsoleService.affiche("0. Retour à la liste des Articles");
+			choice = ConsoleService.choixMenuMinMax(0,3);
 		}
 		
-		Integer choice = ConsoleService.choixMenuMinMax(0,3);
 		selectFicheFigurine(choice, fig);
 	}
 
@@ -306,46 +322,19 @@ public class ConsoleArticle {
 			ConsoleService.affiche("Catégorie : ");
 			newBd.setCategorie(Console.sc.nextLine());
 			ConsoleService.affiche("Nbr. pages : ");
-			Integer nbPages = 0;
-			do {
-				nbPages = Console.sc.nextInt();
-				if (nbPages <= 0) {
-					ConsoleService.affiche("Renseignez un nombre > 0. Réessayez : ");
-				}
-			} while (nbPages <= 0);
+			Integer nbPages = ConsoleService.renseigneChampMaxMinInt("Nbr. pages : ", 0, null);
 			newBd.setNbrPages(nbPages);
 			ConsoleService.affiche("Description : ");
-			Console.sc.nextLine();
 			newBd.setDescription(Console.sc.nextLine());
 			ConsoleService.affiche("Etat de la BD (Saisir \"Neuf\" ou \"Occasion\") : ");
-			String etat = "";
-			do {
-				etat = Console.sc.nextLine();
-				if (!etat.equals("Neuf") && !etat.equals("Occasion")) {
-					ConsoleService.affiche("Saisie incorrecte. Réessayez : ");
-				}
-			} while (!etat.equals("Neuf") && !etat.equals("Occasion"));
+			String etat = ConsoleService.renseigneChampDeuxString("Etat :", "Neuf", "Occasion");
 			newBd.setEtat(etat);
 			ConsoleService.affiche("Prix : ");
-			Float prix = 0.0f;
-			do {
-				prix = Console.sc.nextFloat();
-				if (prix <= 0) {
-					ConsoleService.affiche("Renseignez un prix > 0. Réessayez : ");
-				}
-			} while (prix <= 0);
+			Float prix = ConsoleService.renseigneChampMaxMinFloat("Prix : ", 0f, null);
 			newBd.setPrix(prix);
-			ConsoleService.affiche("Disponiblité en magasin (Saisir \"oui\" ou \"non\") : ");
-			Console.sc.nextLine();
-			String dispo = "";
-			do {
-				dispo = Console.sc.nextLine();
-				if (!dispo.equals("oui") && !dispo.equals("non")) {
-					ConsoleService.affiche("Merci de saisir \"oui\" ou \"non\") : . Réessayez : ");
-				}
-			} while (!dispo.equals("oui") && !dispo.equals("non"));
-			if (dispo.equals("oui")) { newBd.setEnRayon(true); }
-			if (dispo.equals("non")) { newBd.setEnRayon(false); }
+			String dispo = ConsoleService.renseigneChampDeuxString("Disponibilité en magasin :", "oui", "non");
+			if (dispo.equals("oui")) { newBd.setDispo(true); }
+			if (dispo.equals("non")) { newBd.setDispo(false); }
 			
 			bdDAO.create(newBd);
 			
@@ -359,35 +348,14 @@ public class ConsoleArticle {
 			Figurine newFig = new Figurine();
 			newFig.setDescription(Console.sc.nextLine());
 			ConsoleService.affiche("Taille de la figurine (en cm, nombre entier) : ");
-			Integer taille = 0;
-			do {
-				taille = Console.sc.nextInt();
-				if (taille <= 0) {
-					ConsoleService.affiche("Renseignez un nombre > 0. Réessayez : ");
-				}
-			} while (taille <= 0);
+			Integer taille = ConsoleService.renseigneChampMaxMinInt("Taille en cm (nombre entier) : ", 0, null);
 			newFig.setTaille(taille);
 			ConsoleService.affiche("Prix : ");
-			Console.sc.nextLine();
-			Float prix = 0.0f;
-			do {
-				prix = Console.sc.nextFloat();
-				if (prix <= 0) {
-					ConsoleService.affiche("Renseignez un prix > 0. Réessayez : ");
-				}
-			} while (prix <= 0);
+			Float prix = ConsoleService.renseigneChampMaxMinFloat("Prix : ", 0f, null);
 			newFig.setPrix(prix);
-			ConsoleService.affiche("Disponiblité en magasin (Saisir \"oui\" ou \"non\") : ");
-			Console.sc.nextLine();
-			String dispo = "";
-			do {
-				dispo = Console.sc.nextLine();
-				if (!dispo.equals("oui") && !dispo.equals("non")) {
-					ConsoleService.affiche("Merci de saisir \"oui\" ou \"non\") : . Réessayez : ");
-				}
-			} while (!dispo.equals("oui") && !dispo.equals("non"));
-			if (dispo.equals("oui")) { newFig.setEnRayon(true); }
-			if (dispo.equals("non")) { newFig.setEnRayon(false); }
+			String dispo = ConsoleService.renseigneChampDeuxString("Disponibilité en magasin :", "oui", "non");
+			if (dispo.equals("oui")) { newFig.setDispo(true); }
+			if (dispo.equals("non")) { newFig.setDispo(false); }
 			
 			figDAO.create(newFig);
 			
@@ -422,7 +390,6 @@ public class ConsoleArticle {
 			Integer nbPages = ConsoleService.renseigneChampMaxMinInt("Nbr. pages : ", 0, null);
 			if (nbPages > 0) { newBd.setNbrPages(nbPages); }
 			ConsoleService.affiche("Description : ");
-			Console.sc.nextLine();
 			String desc = Console.sc.nextLine();
 			if (!desc.isEmpty()) { newBd.setDescription(desc); }
 			String etat = ConsoleService.renseigneChampDeuxString("Etat :", "Neuf", "Occasion");
@@ -431,8 +398,8 @@ public class ConsoleArticle {
 			if (prix > 0) { newBd.setPrix(prix); }
 			String dispo = ConsoleService.renseigneChampDeuxString("Disponibilité en magasin :", "oui", "non");
 			if (!dispo.equals("")) { 
-				if (dispo.equals("oui")) { newBd.setEnRayon(true); }
-				if (dispo.equals("non")) { newBd.setEnRayon(false); } 
+				if (dispo.equals("oui")) { newBd.setDispo(true); }
+				if (dispo.equals("non")) { newBd.setDispo(false); } 
 			}
 			bdDAO.update(newBd);
 			
@@ -451,8 +418,8 @@ public class ConsoleArticle {
 			if (prix > 0) { newFig.setPrix(prix); }
 			String dispo = ConsoleService.renseigneChampDeuxString("Disponibilité en magasin :", "oui", "non");
 			if (!dispo.equals("")) { 
-				if (dispo.equals("oui")) { newFig.setEnRayon(true); }
-				if (dispo.equals("non")) { newFig.setEnRayon(false); } 
+				if (dispo.equals("oui")) { newFig.setDispo(true); }
+				if (dispo.equals("non")) { newFig.setDispo(false); } 
 			}
 			figDAO.update(newFig);
 			

@@ -34,8 +34,8 @@ public class Article implements Serializable {
 		this.idArticle = idArticle;
 	}
 
-	public String dispo() {
-		if (Boolean.TRUE.equals(this.getEnRayon())) {
+	public String afficheDispo() {
+		if (Boolean.TRUE.equals(this.getdispo())) {
 			return "Oui";
 		}
 		else {
@@ -43,11 +43,11 @@ public class Article implements Serializable {
 		}
 	}
 
-	public Boolean getEnRayon() {
+	public Boolean getdispo() {
 		return enRayon;
 	}
 
-	public void setEnRayon(Boolean enRayon) {
+	public void setDispo(Boolean enRayon) {
 		this.enRayon = enRayon;
 	}
 

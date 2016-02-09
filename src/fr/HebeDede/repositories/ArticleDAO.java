@@ -7,6 +7,7 @@ import fr.HebeDede.data.DAO;
 import fr.HebeDede.model.Article;
 import fr.HebeDede.model.Bandedessinee;
 import fr.HebeDede.model.Figurine;
+import fr.HebeDede.service.ConsoleService;
 
 public class ArticleDAO extends DAO<Article> {
 
@@ -15,26 +16,24 @@ public class ArticleDAO extends DAO<Article> {
 	}
 
 	@Override
-	public boolean create(Article obj) {
+	public void create(Article obj) {
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE).executeQuery(
 					"SELECT * FROM article");
 
 			result.moveToInsertRow();
-				result.updateBoolean("enRayon", obj.getEnRayon());
+				result.updateBoolean("enRayon", obj.getdispo());
 				result.updateFloat("prix", obj.getPrix());
 				result.insertRow();
 				result.close();
-				return true;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			ConsoleService.affiche("Echec de l'opération");
 		}
-		return false;
 	}
 
 	@Override
-	public boolean delete(Article obj) {
+	public void delete(Article obj) {
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE).executeQuery(
@@ -45,17 +44,15 @@ public class ArticleDAO extends DAO<Article> {
 					if (id == obj.getIdArticle()) {
 						result.deleteRow();
 						result.close();
-						return true;
 					}
 				}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			ConsoleService.affiche("Echec de l'opération");
 		}
-		return false;
 	}
 
 	@Override
-	public boolean update(Article obj) {
+	public void update(Article obj) {
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE).executeQuery(
@@ -65,16 +62,14 @@ public class ArticleDAO extends DAO<Article> {
 					int id = result.getInt("idUtilisateur");
 					if (id == obj.getIdArticle()) {
 						result.moveToCurrentRow();
-						result.updateBoolean("enRayon", obj.getEnRayon());
+						result.updateBoolean("enRayon", obj.getdispo());
 						result.updateFloat("prix", obj.getPrix());
 						result.close();
-						return true;
 					}
 				}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			ConsoleService.affiche("Echec de l'opération");
 		}
-		return false;
 	}
 
 	public Integer findLastEntryId() {
@@ -87,9 +82,9 @@ public class ArticleDAO extends DAO<Article> {
 			result.close();
 			return id;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			ConsoleService.affiche("Echec de l'opération");
+			return null;
 		}
-		return null;
 	}
 	
 	@Override

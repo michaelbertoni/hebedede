@@ -9,6 +9,7 @@ import fr.HebeDede.data.DAO;
 import fr.HebeDede.model.Article;
 import fr.HebeDede.model.Option;
 import fr.HebeDede.model.Utilisateur;
+import fr.HebeDede.service.ConsoleService;
 
 public class OptionDAO extends DAO<Option> {
 	
@@ -21,7 +22,7 @@ public class OptionDAO extends DAO<Option> {
 	}
 
 	@Override
-	public boolean create(Option obj) {
+	public void create(Option obj) {
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE).executeQuery(
@@ -34,15 +35,13 @@ public class OptionDAO extends DAO<Option> {
 				result.updateInt("Article_idArticle", obj.getArticle().getIdArticle());
 				result.insertRow();
 				result.close();
-				return true;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			ConsoleService.affiche("Echec de l'opération");
 		}
-		return false;
 	}
 
 	@Override
-	public boolean delete(Option obj) {
+	public void delete(Option obj) {
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE).executeQuery(
@@ -53,17 +52,15 @@ public class OptionDAO extends DAO<Option> {
 					if (id == obj.getIdOption()) {
 						result.deleteRow();
 						result.close();
-						return true;
 					}
 				}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			ConsoleService.affiche("Echec de l'opération");
 		}
-		return false;
 	}
 
 	@Override
-	public boolean update(Option obj) {
+	public void update(Option obj) {
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE).executeQuery(
@@ -76,13 +73,34 @@ public class OptionDAO extends DAO<Option> {
 						result.updateTimestamp("dateDebutOption", obj.getDateDebutOption());
 						result.updateTimestamp("dateFinOption", obj.getDateFinOption());
 						result.close();
-						return true;
 					}
 				}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			ConsoleService.affiche("Echec de l'opération");
 		}
-		return false;
+	}
+
+	public List<Option> findAll() {
+		List<Option> optionList = new ArrayList<Option>();
+		
+		try {
+			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
+			        ResultSet.CONCUR_READ_ONLY
+			        ).executeQuery("SELECT * FROM optionarticle ORDER BY dateFinOption DESC");
+			while (result.next()) {
+				Option option = new Option(result.getTimestamp("dateDebutOption"),
+					result.getTimestamp("dateFinOption"),
+					articleDAO.find(result.getInt("Article_idArticle")),
+					userDAO.find(result.getInt("Utilisateur_idUtilisateur")),
+					result.getInt("idOption"));
+				optionList.add(option);
+			}
+			result.close();
+			return optionList;
+		} catch (SQLException e) {
+			ConsoleService.affiche("Echec de l'opération");
+			return null;
+		}
 	}
 
 	@Override
@@ -103,31 +121,10 @@ public class OptionDAO extends DAO<Option> {
 				return option;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			ConsoleService.affiche("Echec de l'opération");
+			return null;
 		}
 		return null;
-	}
-	
-	public List<Option> findAll() {
-		List<Option> optionList = new ArrayList<Option>();
-		
-		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
-			        ResultSet.CONCUR_READ_ONLY
-			        ).executeQuery("SELECT * FROM optionarticle ORDER BY dateFinOption DESC");
-			while (result.next()) {
-				Option option = new Option(result.getTimestamp("dateDebutOption"),
-					result.getTimestamp("dateFinOption"),
-					articleDAO.find(result.getInt("Article_idArticle")),
-					userDAO.find(result.getInt("Utilisateur_idUtilisateur")),
-					result.getInt("idOption"));
-				optionList.add(option);
-			}
-			result.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return optionList;
 	}
 	
 	public List<Option> findByArticle(Article article) {
@@ -146,10 +143,11 @@ public class OptionDAO extends DAO<Option> {
 				optionList.add(option);
 			}
 			result.close();
+			return optionList;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			ConsoleService.affiche("Echec de l'opération");
+			return null;
 		}
-		return optionList;
 	}
 	
 	public List<Option> findByUtilisateur(Utilisateur user) {
@@ -168,10 +166,11 @@ public class OptionDAO extends DAO<Option> {
 				optionList.add(option);
 			}
 			result.close();
+			return optionList;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			ConsoleService.affiche("Echec de l'opération");
+			return null;
 		}
-		return optionList;
 	}
 
 	

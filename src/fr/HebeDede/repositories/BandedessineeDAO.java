@@ -7,6 +7,7 @@ import java.util.List;
 
 import fr.HebeDede.data.DAO;
 import fr.HebeDede.model.Bandedessinee;
+import fr.HebeDede.service.ConsoleService;
 
 public class BandedessineeDAO extends DAO<Bandedessinee> {
 	
@@ -17,7 +18,7 @@ public class BandedessineeDAO extends DAO<Bandedessinee> {
 	}
 
 	@Override
-	public boolean create(Bandedessinee obj) {
+	public void create(Bandedessinee obj) {
 		try {
 			articleDAO.create(obj);
 			Integer articleId = articleDAO.findLastEntryId();
@@ -39,20 +40,17 @@ public class BandedessineeDAO extends DAO<Bandedessinee> {
 				result.insertRow();
 				
 				result.close();
-				return true;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			ConsoleService.affiche("Echec de l'opération");
 		}
-		return false;
 	}
 
 	@Override
-	public boolean delete(Bandedessinee obj) {
-		return false;
+	public void delete(Bandedessinee obj) {
 	}
 
 	@Override
-	public boolean update(Bandedessinee obj) {
+	public void update(Bandedessinee obj) {
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE).executeQuery(
@@ -74,13 +72,11 @@ public class BandedessineeDAO extends DAO<Bandedessinee> {
 						articleDAO.update(obj);
 						
 						result.close();
-						return true;
 					}
 				}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			ConsoleService.affiche("Echec de l'opération");
 		}
-		return false;
 	}
 
 	@Override
@@ -110,7 +106,8 @@ public class BandedessineeDAO extends DAO<Bandedessinee> {
 				return bd;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			ConsoleService.affiche("Echec de l'opération");
+			return null;
 		}
 		return null;
 	}
@@ -139,10 +136,11 @@ public class BandedessineeDAO extends DAO<Bandedessinee> {
 				bdList.add(bd);
 			}
 			result.close();
+			return bdList;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			ConsoleService.affiche("Echec de l'opération");
+			return null;
 		}
-		return bdList;
 	}
 	
 	public Bandedessinee findByIdArticle(Integer id) {
@@ -171,7 +169,8 @@ public class BandedessineeDAO extends DAO<Bandedessinee> {
 				return bd;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			ConsoleService.affiche("Echec de l'opération");
+			return null;
 		}
 		return null;
 	}

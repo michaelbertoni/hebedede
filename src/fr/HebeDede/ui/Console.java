@@ -18,22 +18,26 @@ public class Console {
 	public static void promptLogin() {
 		AuthentificationService authentificationService = new AuthentificationService();
 		
-		String username = null;
-		String password = null;
+		String username = "";
+		String password = "";
 		
 		Boolean userConnected = false;
 		while(userConnected != true) {
-			sc.nextLine();
-			
 			ConsoleService.affiche("Login :");
-			username = sc.nextLine();
-			
+			while (username.equals("")) {
+				username = sc.nextLine();
+				if (username.equals("")) {
+					ConsoleService.affiche("Veuillez renseigner un nom d'utilisateur.");
+				}
+			}
 			ConsoleService.affiche("Password :");
 			password = sc.nextLine();
 			
 			userConnected = authentificationService.login(username, password);
 			if (userConnected != true) {
 				ConsoleService.affiche("Mot de passe incorrect ! Réessayez.");
+				username = "";
+				password = "";
 			}
 		}
 		UtilisateurDAO userDAO = new UtilisateurDAO();
@@ -48,30 +52,34 @@ public class Console {
 		ConsoleService.affiche("\n******* Site Web d'HébéDédé *******\n\nMenu principal :");
 		
 		ConsoleService.affiche("1. Recherche/Liste des articles\n");
+		Integer choice = 0;
 		if (user == null) {
 			ConsoleService.affiche("2. Login");
 			ConsoleService.affiche("3. Créer un compte");
+			choice = ConsoleService.choixMenuMinMax(0,3);
 		}
 		else {
 			switch (user.getRole()){
 			case "Employe" :
 				ConsoleService.affiche("2. Liste des options");
 				ConsoleService.affiche("3. Mon compte");
+				choice = ConsoleService.choixMenuMinMax(0,3);
 				break;
 			case "Chef" :
 				ConsoleService.affiche("2. Liste des options");
 				ConsoleService.affiche("3. Mon compte");
 				ConsoleService.affiche("4. Gérer comptes utilisateurs");
+				choice = ConsoleService.choixMenuMinMax(0,4);
 				break;
 			case "Client" :
 				ConsoleService.affiche("2. Mes options");
 				ConsoleService.affiche("3. Mon compte");
+				choice = ConsoleService.choixMenuMinMax(0,3);
 				break;
 			}
 		}
 		ConsoleService.affiche("0. Quitter l'application");
 		
-		Integer choice = ConsoleService.choixMenuMinMax(0,4);
 		selectMenu(choice);
 	}
 		
@@ -85,20 +93,14 @@ public class Console {
 					promptLogin();
 					break;
 		    	case 3:
-		    		ConsoleUtilisateur.promptCreerCompte();
+		    		ConsoleUtilisateur.promptCreerUtilisateur();
 		    		break;
-		    	case 4:
-		    		ConsoleService.affiche("\nChoix incorrect.");
-		    		choice = ConsoleService.choixMenuMinMax(0,4);
-		    		selectMenu(choice);
-					break;
-		    	case 0:
+		      	case 0:
 	    			closeApp();
 	    			break;
 	    		default:
 	    			ConsoleService.affiche("\nChoix incorrect.");
-	    			choice = ConsoleService.choixMenuMinMax(0,4);
-	    			selectMenu(choice);
+	    			promptMenu();
 					break;
 	    	}
 	    } else {
@@ -109,43 +111,23 @@ public class Console {
 		    	case 2:
 		    		switch (user.getRole()) {
 		    			case "Employe":
-		    				ConsoleOption.promptOptionsListClient(user);
+		    				ConsoleOption.promptOptionsListAll();
 		    				break;
 		    			case "Chef":
 		    				ConsoleOption.promptOptionsListAll();
 		    				break;
 		    			case "Client":
-		    				ConsoleOption.promptOptionsListAll();
+		    				ConsoleOption.promptOptionsListClient(user);
 		    				break;
 		    		}
 		    		break;
 		    	case 3:
-		    		switch (user.getRole()) {
-		    			case "Employe":
-		    				ConsoleUtilisateur.promptCompteClient(user);
-		    				break;
-		    			case "Chef":
-		    				ConsoleUtilisateur.promptCompteClient(user);
-		    				break;
-		    			case "Client":
-		    				ConsoleUtilisateur.promptCompteClient(user);
-		    				break;
-		    		}
+		    		ConsoleUtilisateur.promptConsulterUtilisateur(user);
 		    		break;
 	    		case 4:
 	    			switch (user.getRole()) {
-		    			case "Employe":
-		    				ConsoleService.affiche("\nChoix incorrect.");
-		    				choice = ConsoleService.choixMenuMinMax(0,4);
-		    				selectMenu(choice);
-		    				break;
 		    			case "Chef":
-		    				ConsoleUtilisateur.promptGererComptesUtilisateurs();
-		    				break;
-		    			case "Client":
-		    				ConsoleService.affiche("\nChoix incorrect.");
-		    				choice = ConsoleService.choixMenuMinMax(0,4);
-		    				selectMenu(choice);
+		    				ConsoleUtilisateur.promptListUtilisateurs();
 		    				break;
 	    			}
 	    			break;
@@ -154,8 +136,7 @@ public class Console {
 	    			break;
 	    		default:
 	    			ConsoleService.affiche("\nChoix incorrect.");
-	    			choice = ConsoleService.choixMenuMinMax(0,4);
-	    			selectMenu(choice);
+	    			promptMenu();
 					break;
 			}
 	    }

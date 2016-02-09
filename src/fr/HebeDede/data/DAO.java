@@ -18,7 +18,7 @@ public abstract class DAO<T> {
 	 * @return boolean
 	 * @throws UtilisateurInconnuException 
 	 */
-	public abstract boolean create(T obj) throws UtilisateurInconnuException;
+	public abstract void create(T obj) throws UtilisateurInconnuException;
 
 	/**
 	 * Méthode pour effacer
@@ -26,7 +26,7 @@ public abstract class DAO<T> {
 	 * @param obj
 	 * @return boolean
 	 */
-	public abstract boolean delete(T obj);
+	public abstract void delete(T obj);
 
 	/**
 	 * Méthode de mise à jour
@@ -34,7 +34,7 @@ public abstract class DAO<T> {
 	 * @param obj
 	 * @return boolean
 	 */
-	public abstract boolean update(T obj);
+	public abstract void update(T obj);
 
 	/**
 	 * Méthode de recherche des informations

@@ -1,5 +1,7 @@
 package fr.HebeDede.ui;
 
+import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 
 import fr.HebeDede.model.Utilisateur;
@@ -8,10 +10,10 @@ import fr.HebeDede.service.ConsoleService;
 
 public class ConsoleUtilisateur {
 	
-	static UtilisateurDAO userDAO = new UtilisateurDAO();
+	public static UtilisateurDAO userDAO = new UtilisateurDAO();
 
-	public static void promptCompteClient(Utilisateur user) {
-		ConsoleService.affiche("\n******* Mon compte client *******\n");
+	public static void promptConsulterUtilisateur(Utilisateur user) {
+		ConsoleService.affiche("\n******* Mon compte utilisateur *******\n");
 		ConsoleService.affiche("Utilisateur n°" + user.getIdUtilisateur() + 
 				" - Username : " + user.getUsername() + 
 				" - " + user.getRole());
@@ -21,13 +23,26 @@ public class ConsoleUtilisateur {
 		ConsoleService.affiche("2. Supprimer un compte");
 		
 		ConsoleService.affiche("0. Retour au menu principal");
+		
+		Integer choice = ConsoleService.choixMenuMinMax(0,2);
+		
+		switch (choice) {
+	    	case 1:
+	    		promptModifierUtilisateur(Console.user);
+	    	case 2:
+	    		promptSupprimerUtilisateur(Console.user);
+	    	case 0:
+	    		Console.promptMenu();
+		}
 	}
 
-	public static void promptGererComptesUtilisateurs() {
+	public static void promptListUtilisateurs() {
 		ConsoleService.affiche("\n******* Liste des utilisateurs *******\n");
 		List<Utilisateur> userList = userDAO.findAll();
+		List<Integer> idList = new ArrayList<Integer>();
 		for (Utilisateur utilisateur : userList) {
 			ConsoleService.affiche("Utilisateur n°" + utilisateur.getIdUtilisateur() + " - Username : " + utilisateur.getUsername() + " - " + utilisateur.getRole());
+			idList.add(utilisateur.getIdUtilisateur());
 		}
 		
 		ConsoleService.affiche("\nMenu :");
@@ -43,24 +58,38 @@ public class ConsoleUtilisateur {
 		Utilisateur utilisateur = new Utilisateur();
 	    switch (choice) {
 	    	case 1:
-	    		promptCreerCompte();
+	    		promptCreerUtilisateur();
 	    	case 2:
 	    		ConsoleService.affiche("Renseigner le numéro de l'utilisateur à modifier : ");
-	    		numUser = Console.sc.nextInt();
-	    		utilisateur = userDAO.find(numUser);
-	    		promptModifierCompte(utilisateur);
-	    	case 3:
+			while (!idList.contains(numUser)) {
+				try {
+					numUser = Console.sc.nextInt();
+					Console.sc.nextLine();
+					utilisateur = userDAO.find(numUser);
+					promptModifierUtilisateur(utilisateur);
+				} catch (InputMismatchException e) {
+					ConsoleService.affiche("Veuillez renseigner un numéro d'utilisateur.");
+				} 
+			}
+		case 3:
 	    		ConsoleService.affiche("Renseigner le numéro de l'utilisateur à supprimer : ");
-	    		numUser = Console.sc.nextInt();
-	    		utilisateur = userDAO.find(numUser);
-	    		promptSupprimerCompte(utilisateur);
-	    	case 0:
+			while (!idList.contains(numUser)) {
+				try {
+					numUser = Console.sc.nextInt();
+					Console.sc.nextLine();
+					utilisateur = userDAO.find(numUser);
+					promptSupprimerUtilisateur(utilisateur);
+				} catch (InputMismatchException e) {
+					ConsoleService.affiche("Veuillez renseigner un numéro d'utilisateur.");
+				} 
+			}
+		case 0:
 	    		Console.promptMenu();
 	    }
 	    
 	}
 
-	public static void promptCreerCompte() {
+	public static void promptCreerUtilisateur() {
 		ConsoleService.affiche("\n******* Création compte *******\n");
 		ConsoleService.affiche("Renseigner un nom d'utilisateur :");
 		String username = Console.sc.nextLine();
@@ -104,7 +133,7 @@ public class ConsoleUtilisateur {
 		Console.promptMenu();
 	}
 
-	public static void promptModifierCompte(Utilisateur utilisateur) {
+	public static void promptModifierUtilisateur(Utilisateur utilisateur) {
 		String choix = ConsoleService.renseigneChampDeuxString("\nQuel champ voulez-vous modifier ?", "username", "password");
 		
 		if (choix.equals("username")) {
@@ -135,7 +164,7 @@ public class ConsoleUtilisateur {
 		
 	}
 
-	public static void promptSupprimerCompte(Utilisateur utilisateur) {
+	public static void promptSupprimerUtilisateur(Utilisateur utilisateur) {
 		String choix = ConsoleService.renseigneChampDeuxString("\nÊtes-vous sûr de vouloir supprimer cet utilisateur ?\nSa suppression entrainera également l'effacement des réservations correspondantes également.", "oui", "non");
 		
 		if (choix.equals("oui")) {

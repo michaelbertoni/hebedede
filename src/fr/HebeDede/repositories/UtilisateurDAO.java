@@ -8,6 +8,7 @@ import java.util.List;
 import fr.HebeDede.data.DAO;
 import fr.HebeDede.exception.UtilisateurInconnuException;
 import fr.HebeDede.model.Utilisateur;
+import fr.HebeDede.service.ConsoleService;
 
 public class UtilisateurDAO extends DAO<Utilisateur> {
 
@@ -16,54 +17,7 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 	}
 
 	@Override
-	public Utilisateur find(Integer id) {
-		Utilisateur user = new Utilisateur();
-
-		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
-			        ResultSet.CONCUR_READ_ONLY
-			        ).executeQuery("SELECT * FROM utilisateur WHERE idUtilisateur = " + id);
-			if(result.first()) {
-				user = new Utilisateur(result.getString("username"), result.getString("password"),
-						result.getString("role"), id);
-				result.close();
-				return user;
-			} else {
-				throw new UtilisateurInconnuException();
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (UtilisateurInconnuException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public Utilisateur findByUsername(String username) {
-		Utilisateur user = null;
-		
-		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
-					ResultSet.CONCUR_READ_ONLY).executeQuery(
-					"SELECT * FROM utilisateur WHERE username = '" + username + "'");
-			if(result.first()) {
-				user = new Utilisateur(username, result.getString("password"), result.getString("role"),
-						result.getInt("idUtilisateur"));
-				result.close();
-				return user;
-			} else {
-				throw new UtilisateurInconnuException();
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (UtilisateurInconnuException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	@Override
-	public boolean create(Utilisateur obj) {
+	public void create(Utilisateur obj) {
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE).executeQuery(
@@ -78,16 +32,14 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 				result.insertRow();
 				result.beforeFirst();
 				result.close();
-				return true;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			ConsoleService.affiche("Echec de l'opération");
 		}
-		return false;
 	}
 
 	@Override
-	public boolean delete(Utilisateur obj) {
+	public void delete(Utilisateur obj) {
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE).executeQuery(
@@ -98,17 +50,15 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 					if (id == obj.getIdUtilisateur()) {
 						result.deleteRow();
 						result.close();
-						return true;
 					}
 				}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			ConsoleService.affiche("Echec de l'opération");
 		}
-		return false;
 	}
 
 	@Override
-	public boolean update(Utilisateur obj) {
+	public void update(Utilisateur obj) {
 		try {
 			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_UPDATABLE).executeQuery(
@@ -122,13 +72,11 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 						result.updateString("password", obj.getPassword());
 						result.updateString("role", obj.getRole());
 						result.close();
-						return true;
 					}
 				}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			ConsoleService.affiche("Echec de l'opération");
 		}
-		return false;
 	}
 
 	public List<Utilisateur> findAll() {
@@ -147,9 +95,56 @@ public class UtilisateurDAO extends DAO<Utilisateur> {
 			result.close();
 			return userList;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			ConsoleService.affiche("Echec de l'opération");
+			return null;
 		}
-		return null;
+	}
+
+	@Override
+	public Utilisateur find(Integer id) {
+		Utilisateur user = new Utilisateur();
+	
+		try {
+			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
+			        ResultSet.CONCUR_READ_ONLY
+			        ).executeQuery("SELECT * FROM utilisateur WHERE idUtilisateur = " + id);
+			if(result.first()) {
+				user = new Utilisateur(result.getString("username"), result.getString("password"),
+						result.getString("role"), id);
+				result.close();
+				return user;
+			} else {
+				throw new UtilisateurInconnuException();
+			}
+		} catch (SQLException e) {
+			ConsoleService.affiche("Echec de l'opération");
+			return null;
+		} catch (UtilisateurInconnuException e) {
+			return null;
+		}
+	}
+
+	public Utilisateur findByUsername(String username) {
+		Utilisateur user = null;
+		
+		try {
+			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
+					ResultSet.CONCUR_READ_ONLY).executeQuery(
+					"SELECT * FROM utilisateur WHERE username = '" + username + "'");
+			if(result.first()) {
+				user = new Utilisateur(username, result.getString("password"), result.getString("role"),
+						result.getInt("idUtilisateur"));
+				result.close();
+				return user;
+			} else {
+				throw new UtilisateurInconnuException();
+			}
+		} catch (SQLException e) {
+			ConsoleService.affiche("Echec de l'opération");
+			return null;
+		} catch (UtilisateurInconnuException e) {
+			return null;
+		}
 	}
 
 }

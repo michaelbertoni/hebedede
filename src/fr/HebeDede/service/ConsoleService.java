@@ -1,5 +1,6 @@
 package fr.HebeDede.service;
 
+import java.util.InputMismatchException;
 import java.util.List;
 
 import fr.HebeDede.ui.Console;
@@ -23,13 +24,18 @@ public class ConsoleService {
 		Integer choice = 0;
 	    while (choixCorrect == false) {
 			affiche("\nVeuillez renseigner votre choix");
-			choice = Console.sc.nextInt();
-			if (choice < minChoix && choice > maxChoix) {
+			try {
+				choice = Console.sc.nextInt();
+				if (choice < minChoix && choice > maxChoix) {
+					affiche("\nChoix incorrect.");
+				} else {
+					choixCorrect = true;
+				}
+			} catch (InputMismatchException e) {
 				affiche("\nChoix incorrect.");
-			} else {
-				choixCorrect = true;
 			}
 		} 
+	    Console.sc.nextLine();
 		return choice;
 	}
 
@@ -38,13 +44,18 @@ public class ConsoleService {
 		Integer choice = 0;
 		while (choixCorrect == false) {
 			affiche("\nVeuillez renseigner votre choix");
-			choice = Console.sc.nextInt();
-			if (!list.contains(choice) && choice != 0) {
-				affiche("\nChoix incorrect, le numéro renseigné ne fait pas partie de la liste.");
-			} else {
-				choixCorrect = true;
+			try {
+				choice = Console.sc.nextInt();
+				if (!list.contains(choice) && choice != 0) {
+					affiche("\nChoix incorrect, le numéro renseigné ne fait pas partie de la liste.");
+				} else {
+					choixCorrect = true;
+				}
+			} catch (InputMismatchException e) {
+				affiche("Renseignez un numéro dans la liste.");
 			}
 		} 
+		Console.sc.nextLine();
 		return choice;
 	}
 
@@ -53,15 +64,23 @@ public class ConsoleService {
 		Integer num = 0;
 		if (max == null) {
 			do {
-				num = Console.sc.nextInt();
-				if (num < min) {
+				try {
+					num = Console.sc.nextInt();
+					if (num < min) {
+						affiche("Renseignez un nombre supérieur ou égale à " + min + ".");
+					}
+				} catch (InputMismatchException e) { 
 					affiche("Renseignez un nombre supérieur ou égale à " + min + ".");
 				}
 			} while (num < min);
 		} else {
 			do {
-				num = Console.sc.nextInt();
-				if (num < min && num > max) {
+				try {
+					num = Console.sc.nextInt();
+					if (num < min && num > max) {
+						affiche("Renseignez un nombre compris entre " + min + " et " + max + ".");
+					}
+				} catch (InputMismatchException e) { 
 					affiche("Renseignez un nombre compris entre " + min + " et " + max + ".");
 				}
 			} while (num < min);
@@ -75,15 +94,23 @@ public class ConsoleService {
 		Float num = 0f;
 		if (max == null) {
 			do {
-				num = Console.sc.nextFloat();
-				if (num < min) {
+				try {
+					num = Console.sc.nextFloat();
+					if (num < min) {
+						affiche("Renseignez un nombre supérieur ou égale à " + min + ".");
+					}
+				} catch (InputMismatchException e) {
 					affiche("Renseignez un nombre supérieur ou égale à " + min + ".");
 				}
 			} while (num < min);
 		} else {
 			do {
-				num = Console.sc.nextFloat();
-				if (num < min && num > max) {
+				try {
+					num = Console.sc.nextFloat();
+					if (num < min && num > max) {
+						affiche("Renseignez un nombre compris entre " + min + " et " + max + ".");
+					}
+				} catch (InputMismatchException e) {
 					affiche("Renseignez un nombre compris entre " + min + " et " + max + ".");
 				}
 			} while (num < min);

@@ -21,7 +21,7 @@ public class ConsoleOption {
 	static OptionDAO optionDAO = new OptionDAO();
 	
 	public static void promptOptionsListClient(Utilisateur user) {
-		ConsoleService.affiche ("\n Réservations liées à l'utilisateur " + user.getUsername() + " :");
+		ConsoleService.affiche ("\n******* Mes réservations *******");
 		List<Option> optionList = optionDAO.findByUtilisateur(user);
 		List<Integer> optionId = new ArrayList<Integer>();
 		List<String> menuList = new ArrayList<String>();
@@ -62,7 +62,7 @@ public class ConsoleOption {
 	}
 
 	public static void promptOptionsListAll() {
-		ConsoleService.affiche("\n******* Liste des Réservation *******\n");
+		ConsoleService.affiche("\n******* Liste des Réservation *******");
 		List<Option> optionList = optionDAO.findAll();
 		List<Integer> optionId = new ArrayList<Integer>();
 		for (Option option : optionList) {
@@ -73,16 +73,16 @@ public class ConsoleOption {
 			if (bd != null) {
 				ConsoleService.affiche("\nRéservation n°" + option.getIdOption() + " - Article n°: " + option.getArticle().getIdArticle() + 
 						"\nLibellé : " + bd.getLibelle() + " - Collection : " + bd.getCollection() + 
-						"\nArticle disponible jusqu'au " + option.getDateFinOption().getTime());
+						"\nArticle disponible jusqu'au " + option.getDateFinOption());
 			}
 			else if (fig != null) {
 				ConsoleService.affiche("\nRéservation n°" + option.getIdOption() + " - Article n°: " + option.getArticle().getIdArticle() + 
 						"\nLibellé : " + fig.getDescription() + 
-						"\nArticle disponible jusqu'au " + option.getDateFinOption().getTime());
+						"\nArticle disponible jusqu'au " + option.getDateFinOption());
 			}
 			optionId.add(option.getIdOption());
 		}
-		ConsoleService.affiche("Menu :");
+		ConsoleService.affiche("\nMenu :");
 		ConsoleService.affiche("1. Annuler une réservation");
 		ConsoleService.affiche("\n0. Retour au menu principal");
 		
@@ -90,13 +90,7 @@ public class ConsoleOption {
 	
 	    if (choice == 1) {
 	    	ConsoleService.affiche("\nRenseigner le numero de l'option à annuler : ");
-	    	Integer idOption = 0;
-	    	do {
-	    		idOption = Console.sc.nextInt();
-	    		if (!optionId.contains(idOption)) {
-	    			ConsoleService.affiche("Le numéro d'option renseigné est incorrect.");
-	    		}
-	    	} while (!optionId.contains(idOption));
+	    	Integer idOption = ConsoleService.choixMenuIntList(optionId);
 	    	Option option = optionDAO.find(idOption);
 	    	Utilisateur optionUser = option.getUtilisateur();
 	    	promptAnnulerOption(option, optionUser);
@@ -112,18 +106,10 @@ public class ConsoleOption {
 			ConsoleService.affiche("Cette option n'appartient pas à l'utilisateur " + user.getUsername() + ", annulation impossible.");
 		}
 		else {		
-			ConsoleService.affiche("\nVous êtes sur le point d'annuler l'option n°"+ option.getIdOption() + ".\nÊtes-vous sûr ? (oui/non) ");
-			String choix = "";
-			do {
-				Console.sc.nextLine();
-				choix = Console.sc.nextLine();
-				if (!choix.equals("oui") && !choix.equals("non")) {
-					ConsoleService.affiche("\nChoix incorrect.");
-				}
-			} while (choix.equals("") && !choix.equals("oui") && !choix.equals("non"));
+			String choix = ConsoleService.renseigneChampDeuxString("\nVous êtes sur le point d'annuler l'option n°"+ option.getIdOption() + ".\nÊtes-vous sûr ? (oui/non) ", "oui", "non");
 			
 			if(choix.equals("oui")) {
-				
+				option.getArticle().setDispo(true);
 				optionDAO.delete(option);
 				ConsoleService.affiche("Réservation annulée !");
 			}
@@ -152,7 +138,7 @@ public class ConsoleOption {
 	}
 
 	public static void promptReservation(Article obj) {
-		if (obj.getEnRayon().equals(false)) { 
+		if (obj.getdispo().equals(false)) { 
 			ConsoleService.affiche("\nL'article n'est pas disponible à la réservation. Redirection vers la fiche article...");
 			ConsoleService.sleep(3000);
 			ConsoleArticle.findFicheArticle(obj);
@@ -172,7 +158,7 @@ public class ConsoleOption {
 				Timestamp tsFin = new Timestamp(ts.getTime() + Console.dureeResa);
 				Option resa = new Option(ts, tsFin, obj, Console.user);
 				optionDAO.create(resa);
-				obj.setEnRayon(false);
+				obj.setDispo(false);
 				ConsoleArticle.articleDAO.update(obj);
 				ConsoleService.affiche("Votre article est réservé ! Vous pouvez le retirer en magasin dans un délai de 4 heures.");
 				ConsoleService.affiche("Retour sur la fiche Article...");
