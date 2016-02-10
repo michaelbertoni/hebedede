@@ -2,6 +2,7 @@ package fr.HebeDede.repositories;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,10 +24,12 @@ public class OptionDAO extends DAO<Option> {
 
 	@Override
 	public void create(Option obj) {
+		Statement stmt = null;
+		ResultSet result = null;
 		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_UPDATABLE).executeQuery(
-					"SELECT * FROM optionarticle");
+			stmt = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			result = stmt.executeQuery("SELECT * FROM optionarticle");
 
 			result.moveToInsertRow();
 				result.updateTimestamp("dateDebutOption", obj.getDateDebutOption());
@@ -34,37 +37,45 @@ public class OptionDAO extends DAO<Option> {
 				result.updateInt("Utilisateur_idUtilisateur", obj.getUtilisateur().getIdUtilisateur());
 				result.updateInt("Article_idArticle", obj.getArticle().getIdArticle());
 				result.insertRow();
-				result.close();
 		} catch (SQLException e) {
 			ConsoleService.affiche("Echec de l'opération");
+		} finally {
+		    try { if (result != null) result.close(); } catch (Exception e) {};
+		    try { if (stmt != null) stmt.close(); } catch (Exception e) {};
 		}
 	}
 
 	@Override
 	public void delete(Option obj) {
+		Statement stmt = null;
+		ResultSet result = null;
 		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_UPDATABLE).executeQuery(
-					"SELECT * FROM optionarticle");
+			stmt = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			result = stmt.executeQuery("SELECT * FROM optionarticle");
 
 			while (result.next()) {
 					int id = result.getInt("idOption");
 					if (id == obj.getIdOption()) {
 						result.deleteRow();
-						result.close();
 					}
 				}
 		} catch (SQLException e) {
 			ConsoleService.affiche("Echec de l'opération");
+		} finally {
+		    try { if (result != null) result.close(); } catch (Exception e) {};
+		    try { if (stmt != null) stmt.close(); } catch (Exception e) {};
 		}
 	}
 
 	@Override
 	public void update(Option obj) {
+		Statement stmt = null;
+		ResultSet result = null;
 		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_UPDATABLE).executeQuery(
-					"SELECT * FROM optionarticle");
+			stmt = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			result = stmt.executeQuery("SELECT * FROM optionarticle");
 
 			while (result.next()) {
 					int id = result.getInt("idOption");
@@ -72,21 +83,25 @@ public class OptionDAO extends DAO<Option> {
 						result.moveToCurrentRow();
 						result.updateTimestamp("dateDebutOption", obj.getDateDebutOption());
 						result.updateTimestamp("dateFinOption", obj.getDateFinOption());
-						result.close();
+						result.updateRow();
 					}
 				}
 		} catch (SQLException e) {
 			ConsoleService.affiche("Echec de l'opération");
+		} finally {
+		    try { if (result != null) result.close(); } catch (Exception e) {};
+		    try { if (stmt != null) stmt.close(); } catch (Exception e) {};
 		}
 	}
 
 	public List<Option> findAll() {
 		List<Option> optionList = new ArrayList<Option>();
-		
+		Statement stmt = null;
+		ResultSet result = null;
 		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
-			        ResultSet.CONCUR_READ_ONLY
-			        ).executeQuery("SELECT * FROM optionarticle ORDER BY dateFinOption DESC");
+			stmt = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
+			        ResultSet.CONCUR_READ_ONLY);
+			result = stmt.executeQuery("SELECT * FROM optionarticle ORDER BY dateFinOption DESC");
 			while (result.next()) {
 				Option option = new Option(result.getTimestamp("dateDebutOption"),
 					result.getTimestamp("dateFinOption"),
@@ -95,34 +110,40 @@ public class OptionDAO extends DAO<Option> {
 					result.getInt("idOption"));
 				optionList.add(option);
 			}
-			result.close();
 			return optionList;
 		} catch (SQLException e) {
 			ConsoleService.affiche("Echec de l'opération");
 			return null;
+		} finally {
+		    try { if (result != null) result.close(); } catch (Exception e) {};
+		    try { if (stmt != null) stmt.close(); } catch (Exception e) {};
 		}
 	}
 
 	@Override
 	public Option find(Integer id) {
 		Option option = new Option();
-
+		
+		Statement stmt = null;
+		ResultSet result = null;
 		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
-			        ResultSet.CONCUR_READ_ONLY
-			        ).executeQuery("SELECT * FROM optionarticle WHERE idOption = " + id);
+			stmt = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
+			        ResultSet.CONCUR_READ_ONLY);
+			result = stmt.executeQuery("SELECT * FROM optionarticle WHERE idOption = " + id);
 			if(result.first()) {
 				option = new Option(result.getTimestamp("dateDebutOption"),
 				result.getTimestamp("dateFinOption"),
 				articleDAO.find(result.getInt("Article_idArticle")),
 				userDAO.find(result.getInt("Utilisateur_idUtilisateur")),
 				id);
-				result.close();
 				return option;
 			}
 		} catch (SQLException e) {
 			ConsoleService.affiche("Echec de l'opération");
 			return null;
+		} finally {
+		    try { if (result != null) result.close(); } catch (Exception e) {};
+		    try { if (stmt != null) stmt.close(); } catch (Exception e) {};
 		}
 		return null;
 	}
@@ -130,10 +151,13 @@ public class OptionDAO extends DAO<Option> {
 	public List<Option> findByArticle(Article article) {
 		List<Option> optionList = new ArrayList<Option>();
 		
+		Statement stmt = null;
+		ResultSet result = null;
+		
 		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
-			        ResultSet.CONCUR_READ_ONLY
-			        ).executeQuery("SELECT * FROM optionarticle WHERE Article_idArticle = " + article.getIdArticle());
+			stmt = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
+			        ResultSet.CONCUR_READ_ONLY);
+			result = stmt.executeQuery("SELECT * FROM optionarticle WHERE Article_idArticle = " + article.getIdArticle());
 			while (result.next()) {
 				Option option = new Option(result.getTimestamp("dateDebutOption"),
 					result.getTimestamp("dateFinOption"),
@@ -142,21 +166,26 @@ public class OptionDAO extends DAO<Option> {
 					result.getInt("idOption"));
 				optionList.add(option);
 			}
-			result.close();
 			return optionList;
 		} catch (SQLException e) {
 			ConsoleService.affiche("Echec de l'opération");
 			return null;
+		} finally {
+		    try { if (result != null) result.close(); } catch (Exception e) {};
+		    try { if (stmt != null) stmt.close(); } catch (Exception e) {};
 		}
 	}
 	
 	public List<Option> findByUtilisateur(Utilisateur user) {
 		List<Option> optionList = new ArrayList<Option>();
 		
+		Statement stmt = null;
+		ResultSet result = null;
+		
 		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
-			        ResultSet.CONCUR_READ_ONLY
-			        ).executeQuery("SELECT * FROM optionarticle WHERE Utilisateur_idUtilisateur = " + user.getIdUtilisateur());
+			stmt = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
+			        ResultSet.CONCUR_READ_ONLY);
+			result = stmt.executeQuery("SELECT * FROM optionarticle WHERE Utilisateur_idUtilisateur = " + user.getIdUtilisateur());
 			while (result.next()) {
 				Option option = new Option(result.getTimestamp("dateDebutOption"),
 					result.getTimestamp("dateFinOption"),
@@ -165,11 +194,13 @@ public class OptionDAO extends DAO<Option> {
 					result.getInt("idOption"));
 				optionList.add(option);
 			}
-			result.close();
 			return optionList;
 		} catch (SQLException e) {
 			ConsoleService.affiche("Echec de l'opération");
 			return null;
+		} finally {
+		    try { if (result != null) result.close(); } catch (Exception e) {};
+		    try { if (stmt != null) stmt.close(); } catch (Exception e) {};
 		}
 	}
 

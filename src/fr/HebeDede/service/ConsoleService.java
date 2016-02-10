@@ -26,13 +26,14 @@ public class ConsoleService {
 			affiche("\nVeuillez renseigner votre choix");
 			try {
 				choice = Console.sc.nextInt();
-				if (choice < minChoix && choice > maxChoix) {
+				if (choice < minChoix || choice > maxChoix || choice == null) {
 					affiche("\nChoix incorrect.");
 				} else {
 					choixCorrect = true;
 				}
 			} catch (InputMismatchException e) {
 				affiche("\nChoix incorrect.");
+				Console.sc.nextLine();
 			}
 		} 
 	    Console.sc.nextLine();
@@ -53,6 +54,7 @@ public class ConsoleService {
 				}
 			} catch (InputMismatchException e) {
 				affiche("Renseignez un numéro dans la liste.");
+				Console.sc.nextLine();
 			}
 		} 
 		Console.sc.nextLine();
@@ -66,24 +68,27 @@ public class ConsoleService {
 			do {
 				try {
 					num = Console.sc.nextInt();
-					if (num < min) {
-						affiche("Renseignez un nombre supérieur ou égale à " + min + ".");
+					if (num < min || num == 0) {
+						affiche("Renseignez un nombre supérieur à " + min + ".");
 					}
 				} catch (InputMismatchException e) { 
-					affiche("Renseignez un nombre supérieur ou égale à " + min + ".");
+					affiche("Renseignez un nombre supérieur à " + min + ".");
+					Console.sc.nextLine();
 				}
-			} while (num < min);
+			} while (num < min || num == 0);
 		} else {
 			do {
 				try {
 					num = Console.sc.nextInt();
-					if (num < min && num > max) {
+					if (num < min || num > max || num == 0) {
 						affiche("Renseignez un nombre compris entre " + min + " et " + max + ".");
 					}
 				} catch (InputMismatchException e) { 
 					affiche("Renseignez un nombre compris entre " + min + " et " + max + ".");
+					Console.sc.nextLine();
 				}
-			} while (num < min);
+			} while (num < min || num > max || num == 0);
+			
 		}
 		Console.sc.nextLine();
 		return num;
@@ -96,24 +101,26 @@ public class ConsoleService {
 			do {
 				try {
 					num = Console.sc.nextFloat();
-					if (num < min) {
-						affiche("Renseignez un nombre supérieur ou égale à " + min + ".");
+					if (num < min || num == 0) {
+						affiche("Renseignez un nombre supérieur à " + min + ".");
 					}
 				} catch (InputMismatchException e) {
-					affiche("Renseignez un nombre supérieur ou égale à " + min + ".");
+					affiche("Renseignez un nombre supérieur à " + min + ".");
+					Console.sc.nextLine();
 				}
-			} while (num < min);
+			} while (num < min || num == 0);
 		} else {
 			do {
 				try {
 					num = Console.sc.nextFloat();
-					if (num < min && num > max) {
+					if (num < min || num > max || num == 0) {
 						affiche("Renseignez un nombre compris entre " + min + " et " + max + ".");
 					}
 				} catch (InputMismatchException e) {
 					affiche("Renseignez un nombre compris entre " + min + " et " + max + ".");
+					Console.sc.nextLine();
 				}
-			} while (num < min);
+			} while (num < min || num > max || num == 0);
 		}
 		Console.sc.nextLine();
 		return num;

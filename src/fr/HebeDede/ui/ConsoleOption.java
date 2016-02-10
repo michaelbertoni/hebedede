@@ -25,6 +25,9 @@ public class ConsoleOption {
 		List<Option> optionList = optionDAO.findByUtilisateur(user);
 		List<Integer> optionId = new ArrayList<Integer>();
 		List<String> menuList = new ArrayList<String>();
+		if (optionList.isEmpty()) {
+			ConsoleService.affiche("\nVous n'avez pas fait de réservation d'article pour le moment !");
+		}
 		for (Option option : optionList) {
 			BandedessineeDAO bdDAO = new BandedessineeDAO();
 			FigurineDAO figDAO = new FigurineDAO();
@@ -33,17 +36,17 @@ public class ConsoleOption {
 			if (bd != null) {
 				ConsoleService.affiche("\nRéservation n°" + option.getIdOption() + " - Article n°: " + option.getArticle().getIdArticle() + 
 						"\nLibellé : " + bd.getLibelle() + " - Collection : " + bd.getCollection() + 
-						"\nArticle disponible jusqu'au " + option.getDateFinOption().getTime());
+						"\nArticle disponible jusqu'au " + option.getDateFinOption());
 			}
 			else if (fig != null) {
 				ConsoleService.affiche("\nRéservation n°" + option.getIdOption() + " - Article n°: " + option.getArticle().getIdArticle() + 
 						"\nLibellé : " + fig.getDescription() + 
-						"\nArticle disponible jusqu'au " + option.getDateFinOption().getTime());
+						"\nArticle disponible jusqu'au " + option.getDateFinOption());
 			}
-			menuList.add(option.getArticle().getIdArticle() + ". Annuler la réservation n°" + option.getIdOption());
+			menuList.add(option.getIdOption() + ". Annuler la réservation n°" + option.getIdOption());
 			optionId.add(option.getIdOption());
 		}
-		ConsoleService.affiche("Menu :");
+		ConsoleService.affiche("\nMenu :");
 		for (String string : menuList) {
 			ConsoleService.affiche(string);
 		}
@@ -65,20 +68,26 @@ public class ConsoleOption {
 		ConsoleService.affiche("\n******* Liste des Réservation *******");
 		List<Option> optionList = optionDAO.findAll();
 		List<Integer> optionId = new ArrayList<Integer>();
+		if (optionList.isEmpty()) {
+			ConsoleService.affiche("\nAucune réservation en cours !");
+		}
 		for (Option option : optionList) {
 			BandedessineeDAO bdDAO = new BandedessineeDAO();
 			FigurineDAO figDAO = new FigurineDAO();
 			Bandedessinee bd = bdDAO.findByIdArticle(option.getArticle().getIdArticle());
 			Figurine fig = figDAO.findByIdArticle(option.getArticle().getIdArticle());
-			if (bd != null) {
-				ConsoleService.affiche("\nRéservation n°" + option.getIdOption() + " - Article n°: " + option.getArticle().getIdArticle() + 
-						"\nLibellé : " + bd.getLibelle() + " - Collection : " + bd.getCollection() + 
-						"\nArticle disponible jusqu'au " + option.getDateFinOption());
-			}
-			else if (fig != null) {
-				ConsoleService.affiche("\nRéservation n°" + option.getIdOption() + " - Article n°: " + option.getArticle().getIdArticle() + 
-						"\nLibellé : " + fig.getDescription() + 
-						"\nArticle disponible jusqu'au " + option.getDateFinOption());
+			Date dateActuelle = new Date();
+			Timestamp tsDateActuelle = new Timestamp(dateActuelle.getTime());
+			if (option.getDateFinOption().after(tsDateActuelle)) {
+				if (bd != null) {
+					ConsoleService.affiche("\nRéservation n°" + option.getIdOption() + " - Article n°: "
+							+ option.getArticle().getIdArticle() + "\nLibellé : " + bd.getLibelle() + " - Collection : "
+							+ bd.getCollection() + "\nArticle disponible jusqu'au " + option.getDateFinOption());
+				} else if (fig != null) {
+					ConsoleService.affiche("\nRéservation n°" + option.getIdOption() + " - Article n°: "
+							+ option.getArticle().getIdArticle() + "\nLibellé : " + fig.getDescription()
+							+ "\nArticle disponible jusqu'au " + option.getDateFinOption());
+				} 
 			}
 			optionId.add(option.getIdOption());
 		}
@@ -102,16 +111,20 @@ public class ConsoleOption {
 
 	public static void promptAnnulerOption(Option option, Utilisateur user) {
 		List<Option> optionList = optionDAO.findByUtilisateur(user);
-		if (!optionList.contains(option)) {
-			ConsoleService.affiche("Cette option n'appartient pas à l'utilisateur " + user.getUsername() + ", annulation impossible.");
-		}
-		else {		
-			String choix = ConsoleService.renseigneChampDeuxString("\nVous êtes sur le point d'annuler l'option n°"+ option.getIdOption() + ".\nÊtes-vous sûr ? (oui/non) ", "oui", "non");
-			
-			if(choix.equals("oui")) {
-				option.getArticle().setDispo(true);
-				optionDAO.delete(option);
-				ConsoleService.affiche("Réservation annulée !");
+		for (Option optionItem : optionList) {
+			if (optionItem.getIdOption() == option.getIdOption()) {
+				String choix = ConsoleService.renseigneChampDeuxString("\nVous êtes sur le point d'annuler l'option n°"+ option.getIdOption() + ".\nÊtes-vous sûr ? (oui/non) ", "oui", "non");
+				
+				if(choix.equals("oui")) {
+					option.getArticle().setDispo(true);
+					optionDAO.delete(option);
+					ConsoleService.affiche("Réservation annulée !");
+				}
+				break;
+			}
+			else {
+				ConsoleService.affiche("Cette option n'appartient pas à l'utilisateur " + user.getUsername() + ", annulation impossible.");
+				break;
 			}
 		}
 		
@@ -144,14 +157,8 @@ public class ConsoleOption {
 			ConsoleArticle.findFicheArticle(obj);
 		}
 		else {
-			ConsoleService.affiche("\nVous êtes sur le point de réserver cet article, confirmez-vous l'opération ? (oui/non)");
 			String confirm = "";
-			while (!confirm.equals("oui") && !confirm.equals("non")) {
-				confirm = Console.sc.nextLine();
-				if (!confirm.equals("oui") && !confirm.equals("non")) {
-					ConsoleService.affiche("Merci de saisir \"oui\" ou \"non\") : . Réessayez : ");
-				}
-			}
+			confirm = ConsoleService.renseigneChampDeuxString("\nVous êtes sur le point de réserver cet article, confirmez-vous l'opération ? (oui/non)", "oui", "non");
 			if (confirm.equals("oui")) {
 				Date dateActuelle = new Date();
 				Timestamp ts = new Timestamp(dateActuelle.getTime());

@@ -23,6 +23,9 @@ public class ConsoleArticle {
 		List<Bandedessinee> bdList = bdDAO.findAllBD();
 		List<Figurine> figList = figDAO.findAllFig();
 		ConsoleService.affiche("\n******* Liste des Articles *******\n");
+		if (bdList.isEmpty()) {
+			ConsoleService.affiche("Aucune article dans la base de données !");
+		}
 		for (Bandedessinee bd : bdList) {
 			ConsoleService.affiche("Bande dessinée - Réf. article " + bd.getIdArticle() + " | Titre : " + bd.getLibelle() + " | Collection : " + bd.getCollection()  + " | Prix : " + bd.getPrix() + "€" + " | Disponible : " + bd.afficheDispo());
 		}
@@ -56,12 +59,12 @@ public class ConsoleArticle {
 					break;
 				case 2:
 					ConsoleService.affiche("\nLa recherche multi-critère n'est pas disponible pour le moment.");
-					choice = ConsoleService.choixMenuMinMax(0,3);
+					choice = ConsoleService.choixMenuMinMax(0,2);
 					selectArticleList(choice);
 					break;
 				case 3:
 					ConsoleService.affiche("\nChoix incorrect.");
-					choice = ConsoleService.choixMenuMinMax(0,3);
+					choice = ConsoleService.choixMenuMinMax(0,2);
 					selectArticleList(choice);
 					break;
 				case 0:
@@ -79,7 +82,9 @@ public class ConsoleArticle {
 					ouvrirFicheArticle();
 					break;
 				case 2:
-					ConsoleArticle.promptRechercheMultiCriteres();
+					ConsoleService.affiche("\nLa recherche multi-critère n'est pas disponible pour le moment.");
+					choice = ConsoleService.choixMenuMinMax(0,3);
+					selectArticleList(choice);
 					break;
 				case 3:
 					ConsoleArticle.ajouterArticle();
@@ -102,13 +107,14 @@ public class ConsoleArticle {
 		do {
 			try {
 				idArticle = Console.sc.nextInt();
-				if (articleDAO.find(idArticle) == null) {
+				if (articleDAO.find(idArticle) == null || idArticle == 0) {
 					ConsoleService.affiche("La référence article est inexistante, veuillez réessayer.");
 				}
 			} catch (InputMismatchException e) {
 				ConsoleService.affiche("Seuls les nombres sont acceptez, veuillez réessayer.");
+				Console.sc.nextLine();
 			}
-		} while (articleDAO.find(idArticle) == null);
+		} while (articleDAO.find(idArticle) == null || idArticle == 0);
 			Console.sc.nextLine();
 			
 		Article article = articleDAO.find(idArticle);
@@ -217,14 +223,8 @@ public class ConsoleArticle {
 					ConsoleArticle.modifFiche(bd);
 					break;
 				case 3:
-					ConsoleService.affiche("Êtes-vous sûr de vouloir supprimer cette BD (oui/non) ? ");
 					String ok = "";
-					do {
-						ok = Console.sc.nextLine();
-						if (!ok.equals("oui") && !ok.equals("non")) {
-							ConsoleService.affiche("Merci de saisir \"oui\" ou \"non\") : . Réessayez : ");
-						}
-					} while (!ok.equals("oui") && !ok.equals("non"));
+					ok = ConsoleService.renseigneChampDeuxString("Êtes-vous sûr de vouloir supprimer cette BD (oui/non) ? ", "oui", "non");
 					if (ok.equals("oui")) { ConsoleArticle.supprimerFiche(bd); }
 					if (ok.equals("non")) { promptFicheBd(bd); }
 					break;
@@ -278,14 +278,8 @@ public class ConsoleArticle {
 					ConsoleArticle.modifFiche(fig);
 					break;
 				case 3:
-					ConsoleService.affiche("Êtes-vous sûr de vouloir supprimer cette figurine (oui/non) ? ");
 					String ok = "";
-					do {
-						ok = Console.sc.nextLine();
-						if (!ok.equals("oui") && !ok.equals("non")) {
-							ConsoleService.affiche("Merci de saisir \"oui\" ou \"non\") : . Réessayez : ");
-						}
-					} while (!ok.equals("oui") && !ok.equals("non"));
+					ok = ConsoleService.renseigneChampDeuxString("Êtes-vous sûr de vouloir supprimer cette figurine (oui/non) ? ", "oui", "non");
 					if (ok.equals("oui")) { ConsoleArticle.supprimerFiche(fig); }
 					if (ok.equals("non")) { promptFicheFigurine(fig); }
 					break;
@@ -321,18 +315,15 @@ public class ConsoleArticle {
 			newBd.setEditeur(Console.sc.nextLine());
 			ConsoleService.affiche("Catégorie : ");
 			newBd.setCategorie(Console.sc.nextLine());
-			ConsoleService.affiche("Nbr. pages : ");
 			Integer nbPages = ConsoleService.renseigneChampMaxMinInt("Nbr. pages : ", 0, null);
 			newBd.setNbrPages(nbPages);
 			ConsoleService.affiche("Description : ");
 			newBd.setDescription(Console.sc.nextLine());
-			ConsoleService.affiche("Etat de la BD (Saisir \"Neuf\" ou \"Occasion\") : ");
-			String etat = ConsoleService.renseigneChampDeuxString("Etat :", "Neuf", "Occasion");
+			String etat = ConsoleService.renseigneChampDeuxString("Etat de la BD (Saisir \"Neuf\" ou \"Occasion\") : ", "Neuf", "Occasion");
 			newBd.setEtat(etat);
-			ConsoleService.affiche("Prix : ");
 			Float prix = ConsoleService.renseigneChampMaxMinFloat("Prix : ", 0f, null);
 			newBd.setPrix(prix);
-			String dispo = ConsoleService.renseigneChampDeuxString("Disponibilité en magasin :", "oui", "non");
+			String dispo = ConsoleService.renseigneChampDeuxString("Disponibilité en magasin (oui/non) :", "oui", "non");
 			if (dispo.equals("oui")) { newBd.setDispo(true); }
 			if (dispo.equals("non")) { newBd.setDispo(false); }
 			
@@ -347,13 +338,11 @@ public class ConsoleArticle {
 			ConsoleService.affiche("\nRenseigner les informations de la BD :\nDescription : ");
 			Figurine newFig = new Figurine();
 			newFig.setDescription(Console.sc.nextLine());
-			ConsoleService.affiche("Taille de la figurine (en cm, nombre entier) : ");
 			Integer taille = ConsoleService.renseigneChampMaxMinInt("Taille en cm (nombre entier) : ", 0, null);
 			newFig.setTaille(taille);
-			ConsoleService.affiche("Prix : ");
 			Float prix = ConsoleService.renseigneChampMaxMinFloat("Prix : ", 0f, null);
 			newFig.setPrix(prix);
-			String dispo = ConsoleService.renseigneChampDeuxString("Disponibilité en magasin :", "oui", "non");
+			String dispo = ConsoleService.renseigneChampDeuxString("Disponibilité en magasin (oui/non) :", "oui", "non");
 			if (dispo.equals("oui")) { newFig.setDispo(true); }
 			if (dispo.equals("non")) { newFig.setDispo(false); }
 			
@@ -368,7 +357,6 @@ public class ConsoleArticle {
 
 	public static void modifFiche(Article obj) {
 		String typeObj = obj.getClass().getSimpleName();
-		Console.sc.nextLine();
 		if (typeObj.equals("Bandedessinee")) {
 			ConsoleService.affiche("\nRenseigner les informations de la BD (Vous pouvez laisser les champs non modifiés vides) :\nTitre : ");
 			Bandedessinee newBd = (Bandedessinee) obj;
@@ -386,17 +374,16 @@ public class ConsoleArticle {
 			ConsoleService.affiche("Catégorie : ");
 			String categorie = Console.sc.nextLine();
 			if (!categorie.isEmpty()) { newBd.setCategorie(categorie); }
-			ConsoleService.affiche("Nbr. pages : ");
 			Integer nbPages = ConsoleService.renseigneChampMaxMinInt("Nbr. pages : ", 0, null);
 			if (nbPages > 0) { newBd.setNbrPages(nbPages); }
 			ConsoleService.affiche("Description : ");
 			String desc = Console.sc.nextLine();
 			if (!desc.isEmpty()) { newBd.setDescription(desc); }
-			String etat = ConsoleService.renseigneChampDeuxString("Etat :", "Neuf", "Occasion");
+			String etat = ConsoleService.renseigneChampDeuxString("Etat (Neuf/Occasion) :", "Neuf", "Occasion");
 			if (!etat.equals("")) { newBd.setEtat(etat); }
 			Float prix = ConsoleService.renseigneChampMaxMinFloat("Prix : ", 0f, null);
 			if (prix > 0) { newBd.setPrix(prix); }
-			String dispo = ConsoleService.renseigneChampDeuxString("Disponibilité en magasin :", "oui", "non");
+			String dispo = ConsoleService.renseigneChampDeuxString("Disponibilité en magasin (oui/non) :", "oui", "non");
 			if (!dispo.equals("")) { 
 				if (dispo.equals("oui")) { newBd.setDispo(true); }
 				if (dispo.equals("non")) { newBd.setDispo(false); } 
@@ -416,7 +403,7 @@ public class ConsoleArticle {
 			if (taille > 0) { newFig.setTaille(taille); }
 			Float prix = ConsoleService.renseigneChampMaxMinFloat("Prix : ", 0f, null);
 			if (prix > 0) { newFig.setPrix(prix); }
-			String dispo = ConsoleService.renseigneChampDeuxString("Disponibilité en magasin :", "oui", "non");
+			String dispo = ConsoleService.renseigneChampDeuxString("Disponibilité en magasin (oui/non) :", "oui", "non");
 			if (!dispo.equals("")) { 
 				if (dispo.equals("oui")) { newFig.setDispo(true); }
 				if (dispo.equals("non")) { newFig.setDispo(false); } 

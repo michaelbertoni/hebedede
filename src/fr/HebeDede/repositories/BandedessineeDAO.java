@@ -2,6 +2,7 @@ package fr.HebeDede.repositories;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,12 +20,15 @@ public class BandedessineeDAO extends DAO<Bandedessinee> {
 
 	@Override
 	public void create(Bandedessinee obj) {
+		Statement stmt = null;
+		ResultSet result = null;
 		try {
 			articleDAO.create(obj);
 			Integer articleId = articleDAO.findLastEntryId();
 			
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_UPDATABLE).executeQuery(
+			stmt = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			result = stmt.executeQuery(
 					"SELECT * FROM bandedessinee");
 			
 				result.moveToInsertRow();
@@ -38,10 +42,11 @@ public class BandedessineeDAO extends DAO<Bandedessinee> {
 				result.updateInt("nbrPages", obj.getNbrPages());
 				result.updateInt("Article_idArticle", articleId);
 				result.insertRow();
-				
-				result.close();
 		} catch (SQLException e) {
 			ConsoleService.affiche("Echec de l'opération");
+		} finally {
+		    try { if (result != null) result.close(); } catch (Exception e) {};
+		    try { if (stmt != null) stmt.close(); } catch (Exception e) {};
 		}
 	}
 
@@ -51,10 +56,13 @@ public class BandedessineeDAO extends DAO<Bandedessinee> {
 
 	@Override
 	public void update(Bandedessinee obj) {
+		
+		Statement stmt = null;
+		ResultSet result = null;
 		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_UPDATABLE).executeQuery(
-					"SELECT * FROM bandedessinee");
+			stmt = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			result = stmt.executeQuery("SELECT * FROM bandedessinee");
 
 			while (result.next()) {
 					int id = result.getInt("idBandeDessinee");
@@ -68,25 +76,30 @@ public class BandedessineeDAO extends DAO<Bandedessinee> {
 						result.updateString("etat", obj.getEtat());
 						result.updateString("libelle", obj.getLibelle());
 						result.updateInt("nbrPages", obj.getNbrPages());
+						result.updateRow();
 						
 						articleDAO.update(obj);
-						
-						result.close();
 					}
 				}
 		} catch (SQLException e) {
 			ConsoleService.affiche("Echec de l'opération");
+		} finally {
+		    try { if (result != null) result.close(); } catch (Exception e) {};
+		    try { if (stmt != null) stmt.close(); } catch (Exception e) {};
 		}
 	}
 
 	@Override
 	public Bandedessinee find(Integer id) {
 		Bandedessinee bd = new Bandedessinee();
+		
+		Statement stmt = null;
+		ResultSet result = null;
 
 		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
-			        ResultSet.CONCUR_READ_ONLY
-			        ).executeQuery("SELECT * FROM bandedessinee "
+			stmt = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
+			        ResultSet.CONCUR_READ_ONLY);
+			result = stmt.executeQuery("SELECT * FROM bandedessinee "
 			        		+ "INNER JOIN article on bandedessinee.article_idArticle = article.idArticle "
 			        		+ "WHERE idBandeDessinee = " + id);
 			if(result.first()) {
@@ -102,12 +115,14 @@ public class BandedessineeDAO extends DAO<Bandedessinee> {
 						result.getString("libelle"),
 						result.getInt("nbrPages"),
 						id);
-				result.close();
 				return bd;
 			}
 		} catch (SQLException e) {
 			ConsoleService.affiche("Echec de l'opération");
 			return null;
+		} finally {
+		    try { if (result != null) result.close(); } catch (Exception e) {};
+		    try { if (stmt != null) stmt.close(); } catch (Exception e) {};
 		}
 		return null;
 	}
@@ -115,10 +130,13 @@ public class BandedessineeDAO extends DAO<Bandedessinee> {
 	public List<Bandedessinee> findAllBD() {
 		List<Bandedessinee> bdList = new ArrayList<Bandedessinee>();
 		
+		Statement stmt = null;
+		ResultSet result = null;
+		
 		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
-			        ResultSet.CONCUR_READ_ONLY
-			        ).executeQuery("SELECT * FROM bandedessinee "
+			stmt = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
+			        ResultSet.CONCUR_READ_ONLY);
+			result = stmt.executeQuery("SELECT * FROM bandedessinee "
 			        		+ "INNER JOIN article on bandedessinee.Article_idArticle = article.idArticle");
 			while (result.next()) {
 				Bandedessinee bd = new Bandedessinee(result.getBoolean("enRayon"),
@@ -134,22 +152,27 @@ public class BandedessineeDAO extends DAO<Bandedessinee> {
 						result.getInt("nbrPages"),
 						result.getInt("idBandeDessinee"));
 				bdList.add(bd);
-			}
-			result.close();
+			} 
 			return bdList;
 		} catch (SQLException e) {
 			ConsoleService.affiche("Echec de l'opération");
 			return null;
+		} finally {
+		    try { if (result != null) result.close(); } catch (Exception e) {};
+		    try { if (stmt != null) stmt.close(); } catch (Exception e) {};
 		}
 	}
 	
 	public Bandedessinee findByIdArticle(Integer id) {
 		Bandedessinee bd = new Bandedessinee();
+		
+		Statement stmt = null;
+		ResultSet result = null;
 
 		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
-			        ResultSet.CONCUR_READ_ONLY
-			        ).executeQuery("SELECT * FROM bandedessinee "
+			stmt = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
+			        ResultSet.CONCUR_READ_ONLY);
+			result = stmt.executeQuery("SELECT * FROM bandedessinee "
 			        		+ "INNER JOIN article on bandedessinee.Article_idArticle = article.idArticle "
 			        		+ "WHERE Article_idArticle = " + id);
 			if(result.first()) {
@@ -165,12 +188,14 @@ public class BandedessineeDAO extends DAO<Bandedessinee> {
 						result.getString("libelle"),
 						result.getInt("nbrPages"),
 						result.getInt("idBandeDessinee"));
-				result.close();
 				return bd;
 			}
 		} catch (SQLException e) {
 			ConsoleService.affiche("Echec de l'opération");
 			return null;
+		} finally {
+		    try { if (result != null) result.close(); } catch (Exception e) {};
+		    try { if (stmt != null) stmt.close(); } catch (Exception e) {};
 		}
 		return null;
 	}

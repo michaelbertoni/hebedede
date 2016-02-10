@@ -2,6 +2,7 @@ package fr.HebeDede.repositories;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,23 +20,26 @@ public class FigurineDAO extends DAO<Figurine> {
 
 	@Override
 	public void create(Figurine obj) {
+		Statement stmt = null;
+		ResultSet result = null;
 		try {
 			articleDAO.create(obj);
 			Integer articleId = articleDAO.findLastEntryId();
 			
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_UPDATABLE).executeQuery(
-					"SELECT * FROM figurine");
+			stmt = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			result = stmt.executeQuery("SELECT * FROM figurine");
 			
 				result.moveToInsertRow();
 				result.updateString("description", obj.getDescription());
 				result.updateInt("taille", obj.getTaille());
 				result.updateInt("Article_idArticle", articleId);
 				result.insertRow();
-				
-				result.close();
 		} catch (SQLException e) {
 			ConsoleService.affiche("Echec de l'opération");
+		} finally {
+		    try { if (result != null) result.close(); } catch (Exception e) {};
+		    try { if (stmt != null) stmt.close(); } catch (Exception e) {};
 		}
 	}
 
@@ -46,10 +50,12 @@ public class FigurineDAO extends DAO<Figurine> {
 
 	@Override
 	public void update(Figurine obj) {
+		Statement stmt = null;
+		ResultSet result = null;
 		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_UPDATABLE).executeQuery(
-					"SELECT * FROM figurine");
+			stmt = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			result = stmt.executeQuery("SELECT * FROM figurine");
 
 			while (result.next()) {
 					int id = result.getInt("idFigurine");
@@ -57,24 +63,29 @@ public class FigurineDAO extends DAO<Figurine> {
 						result.moveToCurrentRow();
 						result.updateString("description", obj.getDescription());
 						result.updateInt("taille", obj.getTaille());
+						result.updateRow();
 						
 						articleDAO.update(obj);
-						
-						result.close();
 					}
 				}
 		} catch (SQLException e) {
 			ConsoleService.affiche("Echec de l'opération");
+		} finally {
+		    try { if (result != null) result.close(); } catch (Exception e) {};
+		    try { if (stmt != null) stmt.close(); } catch (Exception e) {};
 		}
 	}
 
 	public List<Figurine> findAllFig() {
 		List<Figurine> figList = new ArrayList<Figurine>();
 		
+		Statement stmt = null;
+		ResultSet result = null;
+		
 		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
-			        ResultSet.CONCUR_READ_ONLY
-			        ).executeQuery("SELECT * FROM figurine "
+			stmt = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
+			        ResultSet.CONCUR_READ_ONLY);
+			result = stmt.executeQuery("SELECT * FROM figurine "
 			        		+ "INNER JOIN article on figurine.Article_idArticle = article.idArticle");
 			while (result.next()) {
 				Figurine fig = new Figurine(result.getBoolean("enRayon"),
@@ -85,11 +96,13 @@ public class FigurineDAO extends DAO<Figurine> {
 						result.getInt("idFigurine"));
 				figList.add(fig);
 			}
-			result.close();
 			return figList;
 		} catch (SQLException e) {
 			ConsoleService.affiche("Echec de l'opération");
 			return null;
+		} finally {
+		    try { if (result != null) result.close(); } catch (Exception e) {};
+		    try { if (stmt != null) stmt.close(); } catch (Exception e) {};
 		}
 	
 	}
@@ -97,11 +110,14 @@ public class FigurineDAO extends DAO<Figurine> {
 	@Override
 	public Figurine find(Integer id) {
 		Figurine fig = new Figurine();
+		
+		Statement stmt = null;
+		ResultSet result = null;
 
 		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
-			        ResultSet.CONCUR_READ_ONLY
-			        ).executeQuery("SELECT * FROM figurine "
+			stmt = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
+			        ResultSet.CONCUR_READ_ONLY);
+			result = stmt.executeQuery("SELECT * FROM figurine "
 			        		+ "INNER JOIN article on figurine.article_idArticle = article.idArticle "
 			        		+ "WHERE idFigurine = " + id);
 			if(result.first()) {
@@ -111,23 +127,28 @@ public class FigurineDAO extends DAO<Figurine> {
 						result.getString("description"),
 						result.getInt("taille"),
 						id);
-				result.close();
 				return fig;
 			}
 		} catch (SQLException e) {
 			ConsoleService.affiche("Echec de l'opération");
 			return null;
+		} finally {
+		    try { if (result != null) result.close(); } catch (Exception e) {};
+		    try { if (stmt != null) stmt.close(); } catch (Exception e) {};
 		}
 		return null;
 	}
 	
 	public Figurine findByIdArticle(Integer id) {
 		Figurine fig = new Figurine();
+		
+		Statement stmt = null;
+		ResultSet result = null;
 	
 		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
-			        ResultSet.CONCUR_READ_ONLY
-			        ).executeQuery("SELECT * FROM figurine "
+			stmt = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
+			        ResultSet.CONCUR_READ_ONLY);
+			result = stmt.executeQuery("SELECT * FROM figurine "
 			        		+ "INNER JOIN article on figurine.Article_idArticle = article.idArticle "
 			        		+ "WHERE Article_idArticle = " + id);
 			if(result.first()) {
@@ -137,12 +158,14 @@ public class FigurineDAO extends DAO<Figurine> {
 						result.getString("description"),
 						result.getInt("taille"),
 						result.getInt("idFigurine"));
-				result.close();
 				return fig;
 			}
 		} catch (SQLException e) {
 			ConsoleService.affiche("Echec de l'opération");
 			return null;
+		} finally {
+		    try { if (result != null) result.close(); } catch (Exception e) {};
+		    try { if (stmt != null) stmt.close(); } catch (Exception e) {};
 		}
 		return null;
 	}

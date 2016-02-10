@@ -56,6 +56,7 @@ public class Console {
 		if (user == null) {
 			ConsoleService.affiche("2. Login");
 			ConsoleService.affiche("3. Créer un compte");
+			ConsoleService.affiche("\n0. Quitter l'application");
 			choice = ConsoleService.choixMenuMinMax(0,3);
 		}
 		else {
@@ -63,22 +64,24 @@ public class Console {
 			case "Employe" :
 				ConsoleService.affiche("2. Liste des options");
 				ConsoleService.affiche("3. Mon compte");
+				ConsoleService.affiche("\n0. Quitter l'application");
 				choice = ConsoleService.choixMenuMinMax(0,3);
 				break;
 			case "Chef" :
 				ConsoleService.affiche("2. Liste des options");
 				ConsoleService.affiche("3. Mon compte");
 				ConsoleService.affiche("4. Gérer comptes utilisateurs");
+				ConsoleService.affiche("\n0. Quitter l'application");
 				choice = ConsoleService.choixMenuMinMax(0,4);
 				break;
 			case "Client" :
 				ConsoleService.affiche("2. Mes options");
 				ConsoleService.affiche("3. Mon compte");
+				ConsoleService.affiche("\n0. Quitter l'application");
 				choice = ConsoleService.choixMenuMinMax(0,3);
 				break;
 			}
 		}
-		ConsoleService.affiche("0. Quitter l'application");
 		
 		selectMenu(choice);
 	}

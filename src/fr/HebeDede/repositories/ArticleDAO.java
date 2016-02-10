@@ -2,6 +2,7 @@ package fr.HebeDede.repositories;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import fr.HebeDede.data.DAO;
 import fr.HebeDede.model.Article;
@@ -17,73 +18,94 @@ public class ArticleDAO extends DAO<Article> {
 
 	@Override
 	public void create(Article obj) {
+		Statement stmt = null;
+		ResultSet result = null;
+		
 		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_UPDATABLE).executeQuery(
+			stmt = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			result = stmt.executeQuery(
 					"SELECT * FROM article");
 
 			result.moveToInsertRow();
 				result.updateBoolean("enRayon", obj.getdispo());
 				result.updateFloat("prix", obj.getPrix());
 				result.insertRow();
-				result.close();
 		} catch (SQLException e) {
 			ConsoleService.affiche("Echec de l'opération");
+		} finally {
+		    try { if (result != null) result.close(); } catch (Exception e) {};
+		    try { if (stmt != null) stmt.close(); } catch (Exception e) {};
 		}
 	}
 
 	@Override
 	public void delete(Article obj) {
+		Statement stmt = null;
+		ResultSet result = null;
 		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_UPDATABLE).executeQuery(
+			stmt = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			result = stmt.executeQuery(
 					"SELECT * FROM article");
 
 			while (result.next()) {
 					int id = result.getInt("idArticle");
 					if (id == obj.getIdArticle()) {
 						result.deleteRow();
-						result.close();
 					}
 				}
 		} catch (SQLException e) {
 			ConsoleService.affiche("Echec de l'opération");
+		} finally {
+		    try { if (result != null) result.close(); } catch (Exception e) {};
+		    try { if (stmt != null) stmt.close(); } catch (Exception e) {};
 		}
 	}
 
 	@Override
 	public void update(Article obj) {
+		Statement stmt = null;
+		ResultSet result = null;
 		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_UPDATABLE).executeQuery(
+			stmt = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			result = stmt.executeQuery(
 					"SELECT * FROM article");
 
 			while (result.next()) {
-					int id = result.getInt("idUtilisateur");
+					int id = result.getInt("idArticle");
 					if (id == obj.getIdArticle()) {
 						result.moveToCurrentRow();
 						result.updateBoolean("enRayon", obj.getdispo());
 						result.updateFloat("prix", obj.getPrix());
-						result.close();
+						result.updateRow();
 					}
 				}
 		} catch (SQLException e) {
 			ConsoleService.affiche("Echec de l'opération");
+		} finally {
+		    try { if (result != null) result.close(); } catch (Exception e) {};
+		    try { if (stmt != null) stmt.close(); } catch (Exception e) {};
 		}
 	}
 
 	public Integer findLastEntryId() {
+		Statement stmt = null;
+		ResultSet result = null;
 		try {
-			ResultSet result = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
-			        ResultSet.CONCUR_READ_ONLY
-			        ).executeQuery("SELECT * FROM article");
+			stmt = this.connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, 
+			        ResultSet.CONCUR_READ_ONLY);
+			result = stmt.executeQuery("SELECT * FROM article");
 			result.last();
 			Integer id = result.getInt("idArticle");
-			result.close();
 			return id;
 		} catch (SQLException e) {
 			ConsoleService.affiche("Echec de l'opération");
 			return null;
+		} finally {
+		    try { if (result != null) result.close(); } catch (Exception e) {};
+		    try { if (stmt != null) stmt.close(); } catch (Exception e) {};
 		}
 	}
 	

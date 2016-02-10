@@ -5,6 +5,6 @@ public class UtilisateurInconnuException extends Exception{
 	private static final long serialVersionUID = 1L;
 	
 	public UtilisateurInconnuException() {
-		System.out.println("Utilisateur inconnu !");
+		System.out.println("L'utilisateur n'existe pas !");
 	}
 }
