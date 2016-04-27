@@ -9,7 +9,7 @@ ainsi  que face à d’autres concurrents plus  petits  maisproposant une boutiq
 
 Hébé Dédé vous a donc sollicité afin de l’aider à se doter d’un catalogue en ligne lui lui permettra de gagner en  visibilité  et de  simplifier la  vie  de  ses  clients."
 
-Fonctionnalités proposées :
+Fonctionnalités proposées
 * Authentification client/administrateur
 * Liste/vue produits
 * Réservation/Annulation de réservation/Liste des réservation
